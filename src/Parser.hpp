@@ -2,21 +2,49 @@
 #define _EIGERC_PARSER_HPP_
 
 #include <format>
+#include <memory>
 
 #include "Lexer.hpp"
 #include "Util.hpp"
 
 namespace EigerC {
 
+struct ASTNode {
+    virtual ~ASTNode() = default;
+};
+
+struct NumberNode : ASTNode {
+    double value;
+    NumberNode(double value) : value(value) {}
+};
+
+struct BinaryOpNode : ASTNode {
+    TokenType op;
+    std::unique_ptr<ASTNode> left;
+    std::unique_ptr<ASTNode> right;
+
+    BinaryOpNode(TokenType op, std::unique_ptr<ASTNode> left,
+                 std::unique_ptr<ASTNode> right)
+        : op(op), left(std::move(left)), right(std::move(right)) {}
+};
+
 class Parser {
    public:
     Parser(Lexer &lexer)
-        : m_Lexer(lexer), m_CurrentToken(TokenType::UNKNOWN, -1) {}
+        : m_Lexer(lexer), m_CurrentToken(TokenType::UNKNOWN, -1) {
+        Advance();
+    }
+
+    std::unique_ptr<ASTNode> Parse();
 
    private:
-    void Advance() { m_CurrentToken = m_Lexer.GetNextToken(); }
+    std::unique_ptr<ASTNode> ParseStatement();
+    std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0);
+    std::unique_ptr<ASTNode> ParsePrimary();
 
+    void Advance() { m_CurrentToken = m_Lexer.GetNextToken(); }
     void Expect(TokenType type);
+    int GetPrecedence(TokenType type);
 
    private:
     Lexer &m_Lexer;

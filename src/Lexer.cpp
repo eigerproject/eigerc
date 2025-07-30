@@ -104,6 +104,8 @@ Token Lexer::GetNextToken() {
             case '-': Advance(); return Token(TokenType::MINUS, m_Line);
             case '*': Advance(); return Token(TokenType::MULTIPLY, m_Line);
             case '/': Advance(); return Token(TokenType::DIVIDE, m_Line);
+            case '(': Advance(); return Token(TokenType::LPAREN, m_Line);
+            case ')': Advance(); return Token(TokenType::RPAREN, m_Line);
             case '"': return String();
             default:
                 throw Error(

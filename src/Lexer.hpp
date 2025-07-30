@@ -14,7 +14,9 @@ enum class TokenType {
     PLUS,
     MINUS,
     MULTIPLY,
-    DIVIDE
+    DIVIDE,
+    LPAREN,
+    RPAREN
 };
 
 struct Token {
