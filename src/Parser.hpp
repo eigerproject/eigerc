@@ -2,6 +2,7 @@
 #define _EIGERC_PARSER_HPP_
 
 #include <format>
+#include <iostream>
 #include <memory>
 
 #include "Lexer.hpp"
@@ -11,14 +12,21 @@ namespace EigerC {
 
 struct ASTNode {
     virtual ~ASTNode() = default;
+
+    virtual void PrettyPrint(int indent = 0) = 0;
 };
 
-struct NumberNode : ASTNode {
+struct NumberNode : public ASTNode {
     double value;
     NumberNode(double value) : value(value) {}
+
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, ' ');
+        std::cout << indentStr << value << std::endl;
+    }
 };
 
-struct BinaryOpNode : ASTNode {
+struct BinaryOpNode : public ASTNode {
     TokenType op;
     std::unique_ptr<ASTNode> left;
     std::unique_ptr<ASTNode> right;
@@ -26,6 +34,14 @@ struct BinaryOpNode : ASTNode {
     BinaryOpNode(TokenType op, std::unique_ptr<ASTNode> left,
                  std::unique_ptr<ASTNode> right)
         : op(op), left(std::move(left)), right(std::move(right)) {}
+
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, ' ');
+
+        std::cout << indentStr << Util::TokenTypeToString(op) << std::endl;
+        if (left) left->PrettyPrint(indent + 2);
+        if (right) right->PrettyPrint(indent + 2);
+    };
 };
 
 class Parser {

@@ -12,6 +12,8 @@ int main() {
         EigerC::Parser parser(lex);
 
         auto ast = parser.Parse();
+
+        ast->PrettyPrint();
     } catch (EigerC::Error& e) {
         std::cerr << "Error: " << e.GetMessage() << " at line " << e.GetLine()
                   << std::endl;
