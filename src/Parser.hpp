@@ -21,7 +21,7 @@ struct NumberNode : public ASTNode {
     NumberNode(double value) : value(value) {}
 
     void PrettyPrint(int indent = 0) override {
-        std::string indentStr(indent, ' ');
+        std::string indentStr(indent, '\t');
         std::cout << indentStr << value << std::endl;
     }
 };
@@ -36,11 +36,11 @@ struct BinaryOpNode : public ASTNode {
         : op(op), left(std::move(left)), right(std::move(right)) {}
 
     void PrettyPrint(int indent = 0) override {
-        std::string indentStr(indent, ' ');
+        std::string indentStr(indent, '\t');
 
         std::cout << indentStr << Util::TokenTypeToString(op) << std::endl;
-        if (left) left->PrettyPrint(indent + 2);
-        if (right) right->PrettyPrint(indent + 2);
+        if (left) left->PrettyPrint(indent + 1);
+        if (right) right->PrettyPrint(indent + 1);
     };
 };
 

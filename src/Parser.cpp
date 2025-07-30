@@ -71,7 +71,7 @@ int Parser::GetPrecedence(TokenType type) {
         case TokenType::MINUS: return 1;
         case TokenType::MULTIPLY:
         case TokenType::DIVIDE: return 2;
-        default: return 0;
+        default: return -1;
     }
 }
 
