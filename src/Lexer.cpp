@@ -42,7 +42,7 @@ Token Lexer::Identifier() {
         result += m_CurrentChar;
         Advance();
     }
-    return Token(TokenType::IDENTIFIER, result);
+    return Token(TokenType::IDENTIFIER, m_Line, result);
 }
 
 Token Lexer::Number() {
@@ -52,7 +52,7 @@ Token Lexer::Number() {
         result += m_CurrentChar;
         Advance();
     }
-    return Token(TokenType::NUMBER, result);
+    return Token(TokenType::NUMBER, m_Line, result);
 }
 
 Token Lexer::String() {
@@ -87,7 +87,7 @@ Token Lexer::String() {
 
     Advance();
 
-    return Token(TokenType::STRING, result);
+    return Token(TokenType::STRING, m_Line, result);
 }
 
 Token Lexer::GetNextToken() {
@@ -100,10 +100,10 @@ Token Lexer::GetNextToken() {
         if (isdigit(m_CurrentChar)) return Number();
 
         switch (m_CurrentChar) {
-            case '+': Advance(); return Token(TokenType::PLUS);
-            case '-': Advance(); return Token(TokenType::MINUS);
-            case '*': Advance(); return Token(TokenType::MULTIPLY);
-            case '/': Advance(); return Token(TokenType::DIVIDE);
+            case '+': Advance(); return Token(TokenType::PLUS, m_Line);
+            case '-': Advance(); return Token(TokenType::MINUS, m_Line);
+            case '*': Advance(); return Token(TokenType::MULTIPLY, m_Line);
+            case '/': Advance(); return Token(TokenType::DIVIDE, m_Line);
             case '"': return String();
             default:
                 throw Error(
@@ -112,7 +112,7 @@ Token Lexer::GetNextToken() {
                     m_Line);
         }
     }
-    return Token(TokenType::ENDOFFILE);
+    return Token(TokenType::ENDOFFILE, m_Line);
 }
 
 }  // namespace EigerC

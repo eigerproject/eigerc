@@ -20,8 +20,10 @@ enum class TokenType {
 struct Token {
     TokenType type;
     std::string lexeme;
+    int line;
 
-    Token(TokenType t, const std::string& l = "") : type(t), lexeme(l) {}
+    Token(TokenType t, int ln, const std::string& l = "")
+        : type(t), lexeme(l), line(ln) {}
 };
 
 class Lexer {
