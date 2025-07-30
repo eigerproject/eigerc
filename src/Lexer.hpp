@@ -16,7 +16,8 @@ enum class TokenType {
     MULTIPLY,
     DIVIDE,
     LPAREN,
-    RPAREN
+    RPAREN,
+    COMMA
 };
 
 struct Token {

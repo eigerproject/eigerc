@@ -46,6 +46,21 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
         return expr;
     }
 
+    if (m_CurrentToken.type == TokenType::IDENTIFIER) {
+        std::string identValue = m_CurrentToken.lexeme;
+        Advance();
+
+        if (m_CurrentToken.type == TokenType::LPAREN)
+            return ParseCall(identValue);
+
+        // variables not supported yet
+        throw Error(Error::Type::SYNTAX_ERROR,
+                    std::format("Unexpected identifier `{}`", identValue),
+                    m_CurrentToken.line);
+
+        // return std::make_unique<IdentifierNode>(identifier);
+    }
+
     if (m_CurrentToken.type == TokenType::ENDOFFILE) return NULL;
 
     throw Error(Error::Type::SYNTAX_ERROR,
@@ -63,6 +78,31 @@ void Parser::Expect(TokenType type) {
                     m_CurrentToken.line);
     }
     Advance();
+}
+
+std::unique_ptr<ASTNode> Parser::ParseCall(std::string functionName) {
+    Expect(TokenType::LPAREN);
+
+    std::vector<std::unique_ptr<ASTNode>> arguments;
+    while (m_CurrentToken.type != TokenType::RPAREN) {
+        auto arg = ParseExpression();
+        if (!arg) {
+            throw Error(Error::Type::SYNTAX_ERROR,
+                        "Expected expression in function call",
+                        m_CurrentToken.line);
+        }
+        arguments.push_back(std::move(arg));
+
+        if (m_CurrentToken.type == TokenType::COMMA) {
+            Advance();
+        } else if (m_CurrentToken.type != TokenType::RPAREN) {
+            throw Error(Error::Type::SYNTAX_ERROR, "Expected ',' or ')'",
+                        m_CurrentToken.line);
+        }
+    }
+
+    Expect(TokenType::RPAREN);
+    return std::make_unique<CallNode>(functionName, std::move(arguments));
 }
 
 int Parser::GetPrecedence(TokenType type) {

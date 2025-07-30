@@ -4,6 +4,7 @@
 #include <format>
 #include <iostream>
 #include <memory>
+#include <vector>
 
 #include "Lexer.hpp"
 #include "Util.hpp"
@@ -44,6 +45,22 @@ struct BinaryOpNode : public ASTNode {
     };
 };
 
+struct CallNode : public ASTNode {
+    std::string functionName;
+    std::vector<std::unique_ptr<ASTNode>> arguments;
+
+    CallNode(std::string functionName,
+             std::vector<std::unique_ptr<ASTNode>> arguments)
+        : functionName(std::move(functionName)),
+          arguments(std::move(arguments)) {}
+
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << functionName << std::endl;
+        for (const auto &arg : arguments) { arg->PrettyPrint(indent + 1); }
+    }
+};
+
 class Parser {
    public:
     Parser(Lexer &lexer)
@@ -57,6 +74,7 @@ class Parser {
     std::unique_ptr<ASTNode> ParseStatement();
     std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0);
     std::unique_ptr<ASTNode> ParsePrimary();
+    std::unique_ptr<ASTNode> ParseCall(std::string functionName);
 
     void Advance() { m_CurrentToken = m_Lexer.GetNextToken(); }
     void Expect(TokenType type);
