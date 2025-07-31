@@ -4,7 +4,7 @@
 
 namespace EigerC {
 
-std::unique_ptr<ASTNode> Parser::Parse() {
+std::unique_ptr<ScopeNode> Parser::Parse() {
     std::unique_ptr<ScopeNode> globalScope = std::make_unique<ScopeNode>();
 
     while (m_CurrentToken.type != TokenType::ENDOFFILE)
@@ -43,6 +43,7 @@ std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
 
     while (true) {
         TokenType op = m_CurrentToken.type;
+        int opLine = m_CurrentToken.line;
         int precedence = GetPrecedence(op);
         if (precedence < minPrecedence) break;
 
@@ -50,7 +51,7 @@ std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
         auto right = ParseExpression(precedence + 1);
         if (!right) break;
 
-        left = std::make_unique<BinaryOpNode>(op, std::move(left),
+        left = std::make_unique<BinaryOpNode>(op, opLine, std::move(left),
                                               std::move(right));
     }
 

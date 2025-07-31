@@ -1,19 +1,22 @@
 #include <iostream>
 
+#include "Compiler.hpp"
 #include "Error.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 
 int main() {
-    std::string testSourceCode = "{ { let x = 20 } }";
+    std::string testSourceCode = "let x = \"Hello World\"";
 
     try {
         EigerC::Lexer lex(testSourceCode);
         EigerC::Parser parser(lex);
+        EigerC::BytecodeCompiler compiler(parser.Parse());
 
-        auto ast = parser.Parse();
+        const auto& bytecode = compiler.DoCodegen();
 
-        ast->PrettyPrint();
+        for (const auto& instr : bytecode) { instr.PrettyPrint(); }
+
     } catch (EigerC::Error& e) {
         std::cerr << "Error: " << e.GetMessage() << " at line " << e.GetLine()
                   << std::endl;

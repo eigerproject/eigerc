@@ -11,10 +11,14 @@
 
 namespace EigerC {
 
+class BytecodeCompiler;
+
 struct ASTNode {
     virtual ~ASTNode() = default;
 
     virtual void PrettyPrint(int indent = 0) = 0;
+
+    virtual void Codegen(BytecodeCompiler &compiler) = 0;
 };
 
 struct ScopeNode : public ASTNode {
@@ -25,6 +29,8 @@ struct ScopeNode : public ASTNode {
         std::cout << indentStr << "SCOPE" << std::endl;
         for (const auto &stmt : statements) stmt->PrettyPrint(indent + 1);
     }
+
+    void Codegen(BytecodeCompiler &compiler) override;
 };
 
 struct LetNode : public ASTNode {
@@ -38,6 +44,8 @@ struct LetNode : public ASTNode {
         std::cout << indentStr << "LET " << variableName << std::endl;
         if (value) value->PrettyPrint(indent + 1);
     }
+
+    void Codegen(BytecodeCompiler &compiler) override;
 };
 
 struct NumberNode : public ASTNode {
@@ -48,6 +56,8 @@ struct NumberNode : public ASTNode {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << value << std::endl;
     }
+
+    void Codegen(BytecodeCompiler &compiler) override;
 };
 
 struct VariableNode : public ASTNode {
@@ -57,6 +67,8 @@ struct VariableNode : public ASTNode {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << name << std::endl;
     }
+
+    void Codegen(BytecodeCompiler &compiler) override;
 };
 
 struct BinaryOpNode : public ASTNode {
@@ -64,9 +76,11 @@ struct BinaryOpNode : public ASTNode {
     std::unique_ptr<ASTNode> left;
     std::unique_ptr<ASTNode> right;
 
-    BinaryOpNode(TokenType op, std::unique_ptr<ASTNode> left,
+    int opLine;
+
+    BinaryOpNode(TokenType op, int opl, std::unique_ptr<ASTNode> left,
                  std::unique_ptr<ASTNode> right)
-        : op(op), left(std::move(left)), right(std::move(right)) {}
+        : op(op), opLine(opl), left(std::move(left)), right(std::move(right)) {}
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
@@ -75,6 +89,8 @@ struct BinaryOpNode : public ASTNode {
         if (left) left->PrettyPrint(indent + 1);
         if (right) right->PrettyPrint(indent + 1);
     };
+
+    void Codegen(BytecodeCompiler &compiler) override;
 };
 
 struct CallNode : public ASTNode {
@@ -91,6 +107,8 @@ struct CallNode : public ASTNode {
         std::cout << indentStr << functionName << std::endl;
         for (const auto &arg : arguments) { arg->PrettyPrint(indent + 1); }
     }
+
+    void Codegen(BytecodeCompiler &compiler) override;
 };
 
 class Parser {
@@ -100,7 +118,7 @@ class Parser {
         Advance();
     }
 
-    std::unique_ptr<ASTNode> Parse();
+    std::unique_ptr<ScopeNode> Parse();
 
    private:
     std::unique_ptr<ASTNode> ParseScope();

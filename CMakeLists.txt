@@ -9,6 +9,7 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/Lexer.cpp
     src/Parser.cpp
+    src/Compiler.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE src)
