@@ -7,11 +7,7 @@ namespace EigerC {
 
 class Error {
    public:
-    enum class Type {
-        UNKNOWN,
-        SYNTAX_ERROR,
-        NAME_ERROR,
-    };
+    enum class Type { UNKNOWN, SYNTAX_ERROR, NAME_ERROR, RUNTIME_ERROR };
 
     Error(Type type, const std::string& message, int line = -1)
         : m_Type(type), m_Message(message), m_Line(line) {}

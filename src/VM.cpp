@@ -8,9 +8,8 @@ namespace EigerC {
 void BytecodeVM::ExecuteBytecode() {
     auto PopSafe = [&](int line) -> EiObject {
         if (m_Stack.empty()) {
-            throw std::runtime_error("Runtime error at line " +
-                                     std::to_string(line) +
-                                     ": Stack underflow.");
+            throw Error(Error ::Type::RUNTIME_ERROR, "VM Stack underflow",
+                        line);
         }
         EiObject val = m_Stack.top();
         m_Stack.pop();
@@ -49,10 +48,9 @@ void BytecodeVM::ExecuteBytecode() {
 
             case Opcode::END_SCOPE:
                 if (m_ScopeStack.empty()) {
-                    throw std::runtime_error(
-                        "Runtime error at line " +
-                        std::to_string(inst.sourceCodeLine) +
-                        ": Scope underflow.");
+                    throw Error(Error ::Type::RUNTIME_ERROR,
+                                "VM Scope Stack underflow",
+                                inst.sourceCodeLine);
                 }
                 m_ScopeStack.pop_back();
                 break;
@@ -63,10 +61,9 @@ void BytecodeVM::ExecuteBytecode() {
                     EiObject val = PopSafe(inst.sourceCodeLine);
                     std::cout << val.AsString() << std::endl;
                 } else {
-                    throw std::runtime_error(
-                        "Runtime error at line " +
-                        std::to_string(inst.sourceCodeLine) +
-                        ": Unknown built-in function.");
+                    throw Error(Error ::Type::NAME_ERROR,
+                                "No such built-in function",
+                                inst.sourceCodeLine);
                 }
                 break;
 
@@ -93,9 +90,8 @@ void BytecodeVM::ExecuteBytecode() {
                 break;
 
             default:
-                throw std::runtime_error("Runtime error at line " +
-                                         std::to_string(inst.sourceCodeLine) +
-                                         ": Unknown opcode.");
+                throw Error(Error ::Type::RUNTIME_ERROR, "Unknown Opcode",
+                            inst.sourceCodeLine);
         }
     }
 }

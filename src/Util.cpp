@@ -46,6 +46,7 @@ std::string_view ErrorTypeToString(Error::Type type) {
         case Error::Type::UNKNOWN: return "UNKNOWN";
         case Error::Type::SYNTAX_ERROR: return "SYNTAX_ERROR";
         case Error::Type::NAME_ERROR: return "NAME_ERROR";
+        case Error::Type::RUNTIME_ERROR: return "RUNTIME_ERROR";
         default: return "UNRECOGNIZED_ERROR_TYPE";
     }
 }
