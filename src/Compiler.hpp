@@ -9,6 +9,8 @@
 
 namespace EigerC {
 
+class BytecodeVM;
+
 enum class BuiltInFunctions { EMITLN = 0 };
 
 class BytecodeCompiler {
@@ -35,9 +37,8 @@ class BytecodeCompiler {
         return id;
     }
 
-    std::vector<Instruction>& DoCodegen() {
+    void DoCodegen() {
         for (const auto& stmt : m_AST->statements) stmt->Codegen(*this);
-        return m_Code;
     }
 
    private:
@@ -48,6 +49,8 @@ class BytecodeCompiler {
         m_StringTable;  // maps string ID to string value
     std::vector<Instruction> m_Code;
     std::unique_ptr<ScopeNode> m_AST;
+
+    friend class BytecodeVM;
 };
 
 }  // namespace EigerC

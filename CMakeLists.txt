@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}
     src/Lexer.cpp
     src/Parser.cpp
     src/Compiler.cpp
+    src/VM.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE src)
