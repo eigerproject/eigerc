@@ -72,6 +72,12 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
         return expr;
     }
 
+    if (m_CurrentToken.type == TokenType::STRING) {
+        std::string strValue = m_CurrentToken.lexeme;
+        Advance();
+        return std::make_unique<StringNode>(strValue);
+    }
+
     if (m_CurrentToken.type == TokenType::IDENTIFIER) {
         std::string identValue = m_CurrentToken.lexeme;
         Advance();

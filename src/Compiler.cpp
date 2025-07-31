@@ -28,6 +28,10 @@ void VariableNode::Codegen(BytecodeCompiler &compiler) {
     compiler.AddInstruction(Opcode::LOAD_VAR, compiler.GetVariableID(name));
 }
 
+void StringNode::Codegen(BytecodeCompiler &compiler) {
+    compiler.AddInstruction(Opcode::LOAD_STRING, compiler.AddString(value));
+}
+
 void BinaryOpNode::Codegen(BytecodeCompiler &compiler) {
     left->Codegen(compiler);
     right->Codegen(compiler);

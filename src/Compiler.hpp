@@ -24,11 +24,15 @@ class BytecodeCompiler {
             return m_SymbolTable[varName];
         else {
             int newID = m_SymbolTable.size();
-            std::cout << "Declaring variable '" << varName << "' with ID "
-                      << newID << std::endl;
             m_SymbolTable[varName] = newID;
             return newID;
         }
+    }
+
+    int AddString(const std::string& str) {
+        int id = m_StringTable.size();
+        m_StringTable[id] = str;
+        return id;
     }
 
     std::vector<Instruction>& DoCodegen() {
@@ -40,6 +44,8 @@ class BytecodeCompiler {
     std::unordered_map<std::string, int> m_SymbolTable{
         {"emitln",
          (int)BuiltInFunctions::EMITLN}};  // maps variable name with ID
+    std::unordered_map<int, std::string>
+        m_StringTable;  // maps string ID to string value
     std::vector<Instruction> m_Code;
     std::unique_ptr<ScopeNode> m_AST;
 };

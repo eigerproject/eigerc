@@ -60,9 +60,21 @@ struct NumberNode : public ASTNode {
     void Codegen(BytecodeCompiler &compiler) override;
 };
 
+struct StringNode : public ASTNode {
+    std::string value;
+    StringNode(std::string value) : value(std::move(value)) {}
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << "\"" << value << "\"" << std::endl;
+    };
+
+    void Codegen(BytecodeCompiler &compiler) override;
+};
+
 struct VariableNode : public ASTNode {
     std::string name;
     VariableNode(std::string name) : name(std::move(name)) {}
+
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << name << std::endl;
