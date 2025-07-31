@@ -14,6 +14,10 @@ namespace EigerC {
 class BytecodeCompiler;
 
 struct ASTNode {
+    int line;
+
+    ASTNode(int line) : line(line) {}
+
     virtual ~ASTNode() = default;
 
     virtual void PrettyPrint(int indent = 0) = 0;
@@ -23,6 +27,8 @@ struct ASTNode {
 
 struct ScopeNode : public ASTNode {
     std::vector<std::unique_ptr<ASTNode>> statements{};
+
+    ScopeNode(int line) : ASTNode(line) {}
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
@@ -36,8 +42,10 @@ struct ScopeNode : public ASTNode {
 struct LetNode : public ASTNode {
     std::string variableName;
     std::unique_ptr<ASTNode> value;
-    LetNode(std::string variableName, std::unique_ptr<ASTNode> value)
-        : variableName(std::move(variableName)), value(std::move(value)) {}
+    LetNode(std::string variableName, std::unique_ptr<ASTNode> value, int line)
+        : variableName(std::move(variableName)),
+          value(std::move(value)),
+          ASTNode(line) {}
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
@@ -50,7 +58,7 @@ struct LetNode : public ASTNode {
 
 struct NumberNode : public ASTNode {
     double value;
-    NumberNode(double value) : value(value) {}
+    NumberNode(double value, int line) : value(value), ASTNode(line) {}
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
@@ -62,7 +70,8 @@ struct NumberNode : public ASTNode {
 
 struct StringNode : public ASTNode {
     std::string value;
-    StringNode(std::string value) : value(std::move(value)) {}
+    StringNode(std::string value, int line)
+        : value(std::move(value)), ASTNode(line) {}
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "\"" << value << "\"" << std::endl;
@@ -73,7 +82,8 @@ struct StringNode : public ASTNode {
 
 struct VariableNode : public ASTNode {
     std::string name;
-    VariableNode(std::string name) : name(std::move(name)) {}
+    VariableNode(std::string name, int line)
+        : name(std::move(name)), ASTNode(line) {}
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
@@ -88,11 +98,12 @@ struct BinaryOpNode : public ASTNode {
     std::unique_ptr<ASTNode> left;
     std::unique_ptr<ASTNode> right;
 
-    int opLine;
-
     BinaryOpNode(TokenType op, int opl, std::unique_ptr<ASTNode> left,
                  std::unique_ptr<ASTNode> right)
-        : op(op), opLine(opl), left(std::move(left)), right(std::move(right)) {}
+        : ASTNode(opl),
+          op(op),
+          left(std::move(left)),
+          right(std::move(right)) {}
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
@@ -110,9 +121,10 @@ struct CallNode : public ASTNode {
     std::vector<std::unique_ptr<ASTNode>> arguments;
 
     CallNode(std::string functionName,
-             std::vector<std::unique_ptr<ASTNode>> arguments)
+             std::vector<std::unique_ptr<ASTNode>> arguments, int line)
         : functionName(std::move(functionName)),
-          arguments(std::move(arguments)) {}
+          arguments(std::move(arguments)),
+          ASTNode(line) {}
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
@@ -137,7 +149,7 @@ class Parser {
     std::unique_ptr<ASTNode> ParseStatement();
     std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0);
     std::unique_ptr<ASTNode> ParsePrimary();
-    std::unique_ptr<ASTNode> ParseCall(std::string functionName);
+    std::unique_ptr<ASTNode> ParseCall(std::string functionName, int line);
 
     std::unique_ptr<ASTNode> ParseLetStatement();
 

@@ -24,7 +24,9 @@ class BytecodeVM {
         m_ScopeStack[m_ScopeStack.size() - 1][id] = EiObject();
     }
 
-    void SetVar(int id, EiObject value) {
+    void SetVar(int id, EiObject value, int line) {
+        ExpectVarExists(id, line);
+
         for (int i = m_ScopeStack.size() - 1; i >= 0; --i) {
             if (m_ScopeStack[i].contains(id)) {
                 m_ScopeStack[i][id] = value;
@@ -33,7 +35,25 @@ class BytecodeVM {
         }
     }
 
-    EiObject GetVar(int id) {
+    void ExpectVarExists(int id, int line) {
+        for (int i = m_ScopeStack.size() - 1; i >= 0; --i) {
+            if (m_ScopeStack[i].contains(id)) return;
+        }
+        for (const auto &[varName, varId] : m_Compiler.m_SymbolTable) {
+            if (varId == id) {
+                throw Error(Error::Type::NAME_ERROR,
+                            std::format("Variable {} not defined in this scope",
+                                        varName),
+                            line);
+            }
+        }
+
+        throw Error(Error::Type::NAME_ERROR,
+                    std::format("Variable with ID {} not found", id), line);
+    }
+
+    EiObject GetVar(int id, int line) {
+        ExpectVarExists(id, line);
         for (int i = m_ScopeStack.size() - 1; i >= 0; --i) {
             if (m_ScopeStack[i].contains(id)) { return m_ScopeStack[i][id]; }
         }

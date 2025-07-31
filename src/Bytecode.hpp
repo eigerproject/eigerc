@@ -30,8 +30,10 @@ enum Opcode {
 struct Instruction {
     Opcode opcode;
     double operand;
+    int sourceCodeLine;
 
-    Instruction(Opcode op, double opnd) : opcode(op), operand(opnd) {}
+    Instruction(Opcode op, double opnd, int srcln)
+        : opcode(op), operand(opnd), sourceCodeLine(srcln) {}
 
     void PrettyPrint() const {
         std::cout << "Opcode: " << static_cast<int>(opcode)

@@ -10,6 +10,7 @@ class Error {
     enum class Type {
         UNKNOWN,
         SYNTAX_ERROR,
+        NAME_ERROR,
     };
 
     Error(Type type, const std::string& message, int line = -1)

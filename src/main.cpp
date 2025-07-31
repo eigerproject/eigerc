@@ -4,10 +4,15 @@
 #include "Error.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
+#include "Util.hpp"
 #include "VM.hpp"
 
 int main() {
-    std::string testSourceCode = "emitln(1 + 2 * 3)";
+    std::string testSourceCode =
+        "{\n"
+        "    let x = 30\n"
+        "}\n"
+        "emitln(x)\n";
 
     try {
         EigerC::Lexer lex(testSourceCode);
@@ -20,8 +25,8 @@ int main() {
         vm.ExecuteBytecode();
 
     } catch (EigerC::Error& e) {
-        std::cerr << "Error: " << e.GetMessage() << " at line " << e.GetLine()
-                  << std::endl;
+        std::cerr << EigerC::Util::ErrorTypeToString(e.GetType()) << ": "
+                  << e.GetMessage() << " at line " << e.GetLine() << std::endl;
         return 1;
     } catch (const std::exception& e) {
         std::cerr << "Unexpected error: " << e.what() << std::endl;

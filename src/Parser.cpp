@@ -5,7 +5,7 @@
 namespace EigerC {
 
 std::unique_ptr<ScopeNode> Parser::Parse() {
-    std::unique_ptr<ScopeNode> globalScope = std::make_unique<ScopeNode>();
+    std::unique_ptr<ScopeNode> globalScope = std::make_unique<ScopeNode>(1);
 
     while (m_CurrentToken.type != TokenType::ENDOFFILE)
         globalScope->statements.push_back(std::move(ParseStatement()));
@@ -14,7 +14,8 @@ std::unique_ptr<ScopeNode> Parser::Parse() {
 }
 
 std::unique_ptr<ASTNode> Parser::ParseScope() {
-    std::unique_ptr<ScopeNode> scope = std::make_unique<ScopeNode>();
+    std::unique_ptr<ScopeNode> scope =
+        std::make_unique<ScopeNode>(m_CurrentToken.line);
 
     Expect(TokenType::LBRACE);
 
@@ -60,9 +61,10 @@ std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
 
 std::unique_ptr<ASTNode> Parser::ParsePrimary() {
     if (m_CurrentToken.type == TokenType::NUMBER) {
+        int line = m_CurrentToken.line;
         double val = std::stod(m_CurrentToken.lexeme);
         Advance();
-        return std::make_unique<NumberNode>(val);
+        return std::make_unique<NumberNode>(val, line);
     }
 
     if (m_CurrentToken.type == TokenType::LPAREN) {
@@ -73,19 +75,23 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
     }
 
     if (m_CurrentToken.type == TokenType::STRING) {
+        int line = m_CurrentToken.line;
+
         std::string strValue = m_CurrentToken.lexeme;
         Advance();
-        return std::make_unique<StringNode>(strValue);
+        return std::make_unique<StringNode>(strValue, line);
     }
 
     if (m_CurrentToken.type == TokenType::IDENTIFIER) {
+        int line = m_CurrentToken.line;
+
         std::string identValue = m_CurrentToken.lexeme;
         Advance();
 
         if (m_CurrentToken.type == TokenType::LPAREN)
-            return ParseCall(identValue);
+            return ParseCall(identValue, line);
 
-        return std::make_unique<VariableNode>(identValue);
+        return std::make_unique<VariableNode>(identValue, line);
     }
 
     if (m_CurrentToken.type == TokenType::ENDOFFILE) return NULL;
@@ -107,7 +113,7 @@ void Parser::Expect(TokenType type) {
     Advance();
 }
 
-std::unique_ptr<ASTNode> Parser::ParseCall(std::string functionName) {
+std::unique_ptr<ASTNode> Parser::ParseCall(std::string functionName, int line) {
     Expect(TokenType::LPAREN);
 
     std::vector<std::unique_ptr<ASTNode>> arguments;
@@ -129,11 +135,12 @@ std::unique_ptr<ASTNode> Parser::ParseCall(std::string functionName) {
     }
 
     Expect(TokenType::RPAREN);
-    return std::make_unique<CallNode>(functionName, std::move(arguments));
+    return std::make_unique<CallNode>(functionName, std::move(arguments), line);
 }
 
 std::unique_ptr<ASTNode> Parser::ParseLetStatement() {
     Expect(TokenType::IDENTIFIER);
+    int line = m_CurrentToken.line;
     std::string varName = m_CurrentToken.lexeme;
     Expect(TokenType::IDENTIFIER);
 
@@ -148,7 +155,7 @@ std::unique_ptr<ASTNode> Parser::ParseLetStatement() {
         }
     }
 
-    return std::make_unique<LetNode>(varName, std::move(initialVal));
+    return std::make_unique<LetNode>(varName, std::move(initialVal), line);
 }
 
 int Parser::GetPrecedence(TokenType type) {
