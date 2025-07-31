@@ -16,6 +16,7 @@ enum class BuiltInFunctions { EMITLN = 0 };
 class BytecodeCompiler {
    public:
     BytecodeCompiler(std::unique_ptr<ScopeNode> ast) : m_AST(std::move(ast)) {}
+    std::vector<Instruction>& GetInstructions() { return m_Code; }
 
     void AddInstruction(Opcode opcode, int line, double operand = 0) {
         m_Code.emplace_back(opcode, operand, line);

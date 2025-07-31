@@ -11,6 +11,6 @@ add_executable(${PROJECT_NAME}
     src/Parser.cpp
     src/Compiler.cpp
     src/VM.cpp
-)
+ "src/Util.cpp")
 
 target_include_directories(${PROJECT_NAME} PRIVATE src)
