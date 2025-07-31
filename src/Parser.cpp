@@ -53,12 +53,7 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
         if (m_CurrentToken.type == TokenType::LPAREN)
             return ParseCall(identValue);
 
-        // variables not supported yet
-        throw Error(Error::Type::SYNTAX_ERROR,
-                    std::format("Unexpected identifier `{}`", identValue),
-                    m_CurrentToken.line);
-
-        // return std::make_unique<IdentifierNode>(identifier);
+        return std::make_unique<VariableNode>(identValue);
     }
 
     if (m_CurrentToken.type == TokenType::ENDOFFILE) return NULL;

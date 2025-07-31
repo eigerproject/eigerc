@@ -5,7 +5,7 @@
 #include "Parser.hpp"
 
 int main() {
-    std::string testSourceCode = "emitln(1 + 2) * 3";
+    std::string testSourceCode = "emitln(x * x + y * y)";
 
     try {
         EigerC::Lexer lex(testSourceCode);

@@ -27,6 +27,15 @@ struct NumberNode : public ASTNode {
     }
 };
 
+struct VariableNode : public ASTNode {
+    std::string name;
+    VariableNode(std::string name) : name(std::move(name)) {}
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << name << std::endl;
+    }
+};
+
 struct BinaryOpNode : public ASTNode {
     TokenType op;
     std::unique_ptr<ASTNode> left;
