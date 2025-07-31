@@ -11,6 +11,8 @@ int main() {
     std::string testSourceCode =
         "{\n"
         "    let x = 30\n"
+        "    emitln(x * 24) ~ This is a comment\n"
+        "    ~ Cool\n"
         "}\n"
         "emitln(x)\n";
 

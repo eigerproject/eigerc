@@ -99,6 +99,12 @@ Token Lexer::GetNextToken() {
         if (isalpha(m_CurrentChar) || m_CurrentChar == '_') return Identifier();
         if (isdigit(m_CurrentChar)) return Number();
 
+        if (m_CurrentChar == '~') {
+            while (m_CurrentChar != '\0' && m_CurrentChar != '\n') Advance();
+            SkipWhitespace();
+            continue;
+        }
+
         switch (m_CurrentChar) {
             case '+': Advance(); return Token(TokenType::PLUS, m_Line);
             case '-': Advance(); return Token(TokenType::MINUS, m_Line);
