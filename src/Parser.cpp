@@ -5,10 +5,35 @@
 namespace EigerC {
 
 std::unique_ptr<ASTNode> Parser::Parse() {
-    return Parser::ParseStatement();
+    std::unique_ptr<ScopeNode> globalScope = std::make_unique<ScopeNode>();
+
+    while (m_CurrentToken.type != TokenType::ENDOFFILE)
+        globalScope->statements.push_back(std::move(ParseStatement()));
+
+    return globalScope;
+}
+
+std::unique_ptr<ASTNode> Parser::ParseScope() {
+    std::unique_ptr<ScopeNode> scope = std::make_unique<ScopeNode>();
+
+    Expect(TokenType::LBRACE);
+
+    while (m_CurrentToken.type != TokenType::ENDOFFILE &&
+           m_CurrentToken.type != TokenType::RBRACE)
+        scope->statements.push_back(std::move(ParseStatement()));
+
+    Expect(TokenType::RBRACE);
+
+    return scope;
 }
 
 std::unique_ptr<ASTNode> Parser::ParseStatement() {
+    if (m_CurrentToken.type == TokenType::LBRACE) return ParseScope();
+
+    if (m_CurrentToken.type == TokenType::IDENTIFIER) {
+        if (m_CurrentToken.lexeme == "let") return ParseLetStatement();
+    }
+
     return ParseExpression();
 }
 
@@ -100,12 +125,32 @@ std::unique_ptr<ASTNode> Parser::ParseCall(std::string functionName) {
     return std::make_unique<CallNode>(functionName, std::move(arguments));
 }
 
+std::unique_ptr<ASTNode> Parser::ParseLetStatement() {
+    Expect(TokenType::IDENTIFIER);
+    std::string varName = m_CurrentToken.lexeme;
+    Expect(TokenType::IDENTIFIER);
+
+    std::unique_ptr<ASTNode> initialVal = nullptr;
+
+    if (m_CurrentToken.type == TokenType::ASSIGN) {
+        Expect(TokenType::ASSIGN);
+        initialVal = ParseExpression();
+        if (!initialVal) {
+            throw Error(Error::Type::SYNTAX_ERROR,
+                        "Expected expression after '='", m_CurrentToken.line);
+        }
+    }
+
+    return std::make_unique<LetNode>(varName, std::move(initialVal));
+}
+
 int Parser::GetPrecedence(TokenType type) {
     switch (type) {
         case TokenType::PLUS:
         case TokenType::MINUS: return 1;
         case TokenType::MULTIPLY:
         case TokenType::DIVIDE: return 2;
+        case TokenType::ASSIGN: return 0;
         default: return -1;
     }
 }

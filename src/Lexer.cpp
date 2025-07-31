@@ -107,6 +107,9 @@ Token Lexer::GetNextToken() {
             case '(': Advance(); return Token(TokenType::LPAREN, m_Line);
             case ')': Advance(); return Token(TokenType::RPAREN, m_Line);
             case ',': Advance(); return Token(TokenType::COMMA, m_Line);
+            case '=': Advance(); return Token(TokenType::ASSIGN, m_Line);
+            case '{': Advance(); return Token(TokenType::LBRACE, m_Line);
+            case '}': Advance(); return Token(TokenType::RBRACE, m_Line);
             case '"': return String();
             default:
                 throw Error(

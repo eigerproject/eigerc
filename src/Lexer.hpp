@@ -17,7 +17,10 @@ enum class TokenType {
     DIVIDE,
     LPAREN,
     RPAREN,
-    COMMA
+    COMMA,
+    ASSIGN,
+    LBRACE,
+    RBRACE
 };
 
 struct Token {

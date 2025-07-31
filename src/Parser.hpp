@@ -17,6 +17,29 @@ struct ASTNode {
     virtual void PrettyPrint(int indent = 0) = 0;
 };
 
+struct ScopeNode : public ASTNode {
+    std::vector<std::unique_ptr<ASTNode>> statements{};
+
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << "SCOPE" << std::endl;
+        for (const auto &stmt : statements) stmt->PrettyPrint(indent + 1);
+    }
+};
+
+struct LetNode : public ASTNode {
+    std::string variableName;
+    std::unique_ptr<ASTNode> value;
+    LetNode(std::string variableName, std::unique_ptr<ASTNode> value)
+        : variableName(std::move(variableName)), value(std::move(value)) {}
+
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << "LET " << variableName << std::endl;
+        if (value) value->PrettyPrint(indent + 1);
+    }
+};
+
 struct NumberNode : public ASTNode {
     double value;
     NumberNode(double value) : value(value) {}
@@ -80,10 +103,13 @@ class Parser {
     std::unique_ptr<ASTNode> Parse();
 
    private:
+    std::unique_ptr<ASTNode> ParseScope();
     std::unique_ptr<ASTNode> ParseStatement();
     std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0);
     std::unique_ptr<ASTNode> ParsePrimary();
     std::unique_ptr<ASTNode> ParseCall(std::string functionName);
+
+    std::unique_ptr<ASTNode> ParseLetStatement();
 
     void Advance() { m_CurrentToken = m_Lexer.GetNextToken(); }
     void Expect(TokenType type);

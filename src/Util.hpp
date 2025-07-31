@@ -18,6 +18,9 @@ inline std::string_view TokenTypeToString(TokenType type) {
         case TokenType::MULTIPLY: return "MULTIPLY";
         case TokenType::DIVIDE: return "DIVIDE";
         case TokenType::ENDOFFILE: return "<EOF>";
+        case TokenType::ASSIGN: return "ASSIGN";
+        case TokenType::LBRACE: return "LBRACE";
+        case TokenType::RBRACE: return "RBRACE";
         default: return "UNKNOWN";
     }
 }
