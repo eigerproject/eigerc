@@ -18,6 +18,9 @@ std::string_view TokenTypeToString(TokenType type) {
         case TokenType::ASSIGN: return "ASSIGN";
         case TokenType::LBRACE: return "LBRACE";
         case TokenType::RBRACE: return "RBRACE";
+        case TokenType::COMMA: return "COMMA";
+        case TokenType::LPAREN: return "LPAREN";
+        case TokenType::RPAREN: return "RPAREN";
         default: return "UNKNOWN_TOKEN";
     }
 }
