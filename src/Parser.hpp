@@ -40,6 +40,29 @@ struct ScopeNode : public ASTNode {
     void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
+struct IfNode : public ASTNode {
+    std::unique_ptr<ASTNode> condition;
+    std::unique_ptr<ASTNode> ifBlock;
+    std::unique_ptr<ASTNode> elseBlock;
+
+    IfNode(std::unique_ptr<ASTNode> c, std::unique_ptr<ASTNode> ib, int line,
+           std::unique_ptr<ASTNode> eb = nullptr)
+        : condition(std::move(c)),
+          ifBlock(std::move(ib)),
+          elseBlock(std::move(eb)),
+          ASTNode(line) {}
+
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << "IF" << std::endl;
+        condition->PrettyPrint(indent + 1);
+        ifBlock->PrettyPrint(indent + 1);
+        if (elseBlock) elseBlock->PrettyPrint(indent + 1);
+    }
+
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
+};
+
 struct LetNode : public ASTNode {
     std::string variableName;
     std::unique_ptr<ASTNode> value;

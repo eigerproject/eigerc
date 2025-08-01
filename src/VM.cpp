@@ -22,7 +22,12 @@ void BytecodeVM::ExecuteBytecode() {
         m_Stack.push(operation(lhs, rhs));
     };
 
-    for (const Instruction& inst : m_Compiler.GetInstructions()) {
+    const auto& instructions = m_Compiler.GetInstructions();
+    const int instructionCount = instructions.size();
+
+    for (int ip = 0; ip < instructionCount; ++ip) {
+        const Instruction& inst = instructions[ip];
+
         switch (inst.opcode) {
             case Opcode::NO_OP: continue;
 
@@ -41,6 +46,19 @@ void BytecodeVM::ExecuteBytecode() {
                 EiObject value = PopSafe(inst.sourceCodeLine);
                 m_CurrentScope->SetVar(inst.operand, value,
                                        inst.sourceCodeLine);
+                break;
+            }
+
+            case Opcode::JUMP: {
+                ip = static_cast<int>(inst.operand) - 1;
+                break;
+            }
+
+            case Opcode::JUMP_IF_FALSE: {
+                EiObject condition = PopSafe(inst.sourceCodeLine);
+                if (!condition.IsTruthy())
+                    ip = static_cast<int>(inst.operand) - 1;
+
                 break;
             }
 

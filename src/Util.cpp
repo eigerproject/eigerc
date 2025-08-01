@@ -40,6 +40,8 @@ std::string_view OpcodeToString(Opcode opcode) {
         case Opcode::SUBTRACT: return "SUBTRACT";
         case Opcode::MULTIPLY: return "MULTIPLY";
         case Opcode::DIVIDE: return "DIVIDE";
+        case Opcode::JUMP: return "JUMP";
+        case Opcode::JUMP_IF_FALSE: return "JUMP_IF_FALSE";
         default: return "UNKNOWN_OPCODE";
     }
 }

@@ -20,6 +20,27 @@ void LetNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     }
 }
 
+void EigerC::IfNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
+    condition->Codegen(compiler, ctx);
+
+    int ip = compiler.GetInstructionPointer();
+    compiler.AddInstruction(Opcode::NO_OP, line);
+
+    ifBlock->Codegen(compiler, ctx);
+
+    int elseIp = compiler.GetInstructionPointer();
+    if (elseBlock) compiler.AddInstruction(Opcode::NO_OP, line);
+
+    compiler.SetInstructionAt(ip, Opcode::JUMP_IF_FALSE, line,
+                              compiler.GetInstructionPointer());
+
+    if (elseBlock) {
+        elseBlock->Codegen(compiler, ctx);
+        compiler.SetInstructionAt(elseIp, Opcode::JUMP, line,
+                                  compiler.GetInstructionPointer());
+    }
+}
+
 void NumberNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     compiler.AddInstruction(Opcode::LOAD_IMM, line, static_cast<int>(value));
 }

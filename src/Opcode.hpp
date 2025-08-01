@@ -23,6 +23,9 @@ enum class Opcode {
     SUBTRACT,  // Subtract top two values on the stack
     MULTIPLY,  // Multiply top two values on the stack
     DIVIDE,    // Divide top two values on the stack
+
+    JUMP_IF_FALSE,  // Jump if top of stack is falsy value
+    JUMP,           // Unconditional jump
 };
 
 }

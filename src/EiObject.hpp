@@ -24,6 +24,15 @@ struct EiObject {
         return std::get<std::string>(value);
     }
 
+    bool IsTruthy() {
+        if (std::holds_alternative<std::monostate>(value)) return false;
+        if (std::holds_alternative<double>(value))
+            return std::get<double>(value) != 0.0;
+        if (std::holds_alternative<std::string>(value))
+            return !std::get<std::string>(value).empty();
+        return false;
+    }
+
     EiObject Add(const EiObject& other) const {
         if (std::holds_alternative<std::monostate>(value) ||
             std::holds_alternative<std::monostate>(other.value))

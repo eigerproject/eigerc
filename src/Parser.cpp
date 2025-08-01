@@ -33,6 +33,22 @@ std::unique_ptr<ASTNode> Parser::ParseStatement() {
 
     if (m_CurrentToken.type == TokenType::IDENTIFIER) {
         if (m_CurrentToken.lexeme == "let") return ParseLetStatement();
+        if (m_CurrentToken.lexeme == "if") {
+            Advance();
+            auto condition = ParseExpression();
+            auto ifBlock = ParseStatement();
+
+            std::unique_ptr<ASTNode> elseBlock = nullptr;
+            if (m_CurrentToken.type == TokenType::IDENTIFIER &&
+                m_CurrentToken.lexeme == "else") {
+                Advance();
+                elseBlock = ParseStatement();
+            }
+
+            return std::make_unique<IfNode>(
+                std::move(condition), std::move(ifBlock), m_CurrentToken.line,
+                std::move(elseBlock));
+        }
     }
 
     return ParseExpression();
