@@ -99,6 +99,8 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
     }
 
     if (m_CurrentToken.type == TokenType::IDENTIFIER) {
+        if (m_CurrentToken.lexeme == "func") return ParseFunction();
+
         int line = m_CurrentToken.line;
 
         std::string identValue = m_CurrentToken.lexeme;
@@ -172,6 +174,49 @@ std::unique_ptr<ASTNode> Parser::ParseLetStatement() {
     }
 
     return std::make_unique<LetNode>(varName, std::move(initialVal), line);
+}
+
+std::unique_ptr<ASTNode> Parser::ParseFunction() {
+    Expect(TokenType::IDENTIFIER);
+
+    std::string functionName;
+    int functionLine;
+
+    std::vector<std::string> parameters;
+
+    if (m_CurrentToken.type != TokenType::LPAREN) {
+        functionName = m_CurrentToken.lexeme;
+        functionLine = m_CurrentToken.line;
+        Expect(TokenType::IDENTIFIER);
+    }
+
+    Expect(TokenType::LPAREN);
+
+    while (m_CurrentToken.type != TokenType::RPAREN) {
+        parameters.push_back(m_CurrentToken.lexeme);
+        Expect(TokenType::IDENTIFIER);
+
+        if (m_CurrentToken.type != TokenType::COMMA) break;
+        Expect(TokenType::COMMA);
+    }
+
+    Expect(TokenType::RPAREN);
+
+    std::unique_ptr<ASTNode> body = ParseFunctionBody();
+
+    return std::make_unique<FunctionNode>(functionName, parameters,
+                                          std::move(body), functionLine);
+}
+
+std::unique_ptr<ASTNode> Parser::ParseFunctionBody() {
+    if (m_CurrentToken.type == TokenType::RANGLEBRACKET) {
+        Advance();
+        return ParseStatement();
+    } else if (m_CurrentToken.type == TokenType::LBRACE)
+        return ParseScope();
+
+    throw Error(Error::Type::SYNTAX_ERROR,
+                "Expected `>` or `{` for function body");
 }
 
 int Parser::GetPrecedence(TokenType type) {

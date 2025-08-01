@@ -63,6 +63,30 @@ struct IfNode : public ASTNode {
     void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
+struct FunctionNode : public ASTNode {
+    std::string functionName;
+    std::vector<std::string> parameters;
+    std::unique_ptr<ASTNode> body;
+
+    FunctionNode(std::string functionName, std::vector<std::string> parameters,
+                 std::unique_ptr<ASTNode> body, int line)
+        : functionName(std::move(functionName)),
+          parameters(std::move(parameters)),
+          body(std::move(body)),
+          ASTNode(line) {}
+
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << "FUNCTION " << functionName << "(";
+        for (const auto &param : parameters)
+            std::cout << indentStr << param << " ";
+        std::cout << ")" << std::endl;
+        if (body) body->PrettyPrint(indent + 1);
+    }
+
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
+};
+
 struct LetNode : public ASTNode {
     std::string variableName;
     std::unique_ptr<ASTNode> value;
@@ -176,6 +200,10 @@ class Parser {
     std::unique_ptr<ASTNode> ParseCall(std::string functionName, int line);
 
     std::unique_ptr<ASTNode> ParseLetStatement();
+
+    std::unique_ptr<ASTNode> ParseFunction();
+
+    std::unique_ptr<ASTNode> ParseFunctionBody();
 
     void Advance() { m_CurrentToken = m_Lexer.GetNextToken(); }
     void Expect(TokenType type);

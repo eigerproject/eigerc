@@ -7,8 +7,8 @@ enum class Opcode {
     NO_OP,     // No Operation
     LOAD_VAR,  // Push variable value onto the stack
 
-    LOAD_IMM,     // Push immediate value onto the stack
-    LOAD_STRING,  // Push string constant onto the stack
+    LOAD_IMM,    // Push immediate value onto the stack
+    LOAD_CONST,  // Push constant onto the stack
 
     STORE_VAR,  // Pop value from the stack into a variable
 

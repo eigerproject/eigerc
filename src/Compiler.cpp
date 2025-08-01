@@ -50,7 +50,8 @@ void VariableNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
 }
 
 void StringNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
-    compiler.AddInstruction(Opcode::LOAD_STRING, line, ctx.AddString(value));
+    compiler.AddInstruction(Opcode::LOAD_CONST, line,
+                            ctx.AddConstant(EiObject(value)));
 }
 
 void BinaryOpNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
@@ -79,5 +80,8 @@ void CallNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     compiler.AddInstruction(Opcode::CALL, line,
                             ctx.GetVariableID(functionName));
 }
+
+void EigerC::FunctionNode::Codegen(BytecodeCompiler &compiler,
+                                   CompilerContext &ctx) {}
 
 }  // namespace EigerC

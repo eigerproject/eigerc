@@ -16,9 +16,9 @@ std::string CompilerContext::GetVarName(int id) const {
     return "<UNKNOWN_VAR>";
 }
 
-int CompilerContext::AddString(const std::string& str) {
-    int id = stringTable.size();
-    stringTable[id] = str;
+int CompilerContext::AddConstant(const EiObject& c) {
+    int id = constantsTable.size();
+    constantsTable[id] = c;
     return id;
 }
 

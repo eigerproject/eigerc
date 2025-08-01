@@ -20,7 +20,9 @@ enum class TokenType {
     COMMA,
     ASSIGN,
     LBRACE,
-    RBRACE
+    RBRACE,
+    LANGLEBRACKET,
+    RANGLEBRACKET,
 };
 
 struct Token {

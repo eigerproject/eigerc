@@ -30,7 +30,7 @@ std::string_view OpcodeToString(Opcode opcode) {
         case Opcode::NO_OP: return "NO_OP";
         case Opcode::LOAD_VAR: return "LOAD_VAR";
         case Opcode::LOAD_IMM: return "LOAD_IMM";
-        case Opcode::LOAD_STRING: return "LOAD_STRING";
+        case Opcode::LOAD_CONST: return "LOAD_CONST";
         case Opcode::STORE_VAR: return "STORE_VAR";
         case Opcode::DECL_VAR: return "DECL_VAR";
         case Opcode::NEW_SCOPE: return "NEW_SCOPE";

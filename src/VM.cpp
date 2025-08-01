@@ -38,8 +38,8 @@ void BytecodeVM::ExecuteBytecode() {
 
             case Opcode::LOAD_IMM: m_Stack.push(EiObject(inst.operand)); break;
 
-            case Opcode::LOAD_STRING:
-                m_Stack.push(EiObject(m_Context.stringTable[inst.operand]));
+            case Opcode::LOAD_CONST:
+                m_Stack.push(m_Context.constantsTable[inst.operand]);
                 break;
 
             case Opcode::STORE_VAR: {
