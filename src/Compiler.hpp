@@ -5,53 +5,32 @@
 #include <vector>
 
 #include "Bytecode.hpp"
+#include "Context.hpp"
 #include "Parser.hpp"
 
 namespace EigerC {
 
 class BytecodeVM;
 
-enum class BuiltInFunctions { EMITLN = 0 };
-
 class BytecodeCompiler {
    public:
-    BytecodeCompiler(std::unique_ptr<ScopeNode> ast) : m_AST(std::move(ast)) {}
+    BytecodeCompiler(std::unique_ptr<ScopeNode> ast, CompilerContext& ctx)
+        : m_AST(std::move(ast)), m_Context(ctx) {}
     std::vector<Instruction>& GetInstructions() { return m_Code; }
 
     void AddInstruction(Opcode opcode, int line, double operand = 0) {
         m_Code.emplace_back(opcode, operand, line);
     }
 
-    int GetVariableID(std::string varName) {
-        if (m_SymbolTable.contains(varName))
-            return m_SymbolTable[varName];
-        else {
-            int newID = m_SymbolTable.size();
-            m_SymbolTable[varName] = newID;
-            return newID;
-        }
-    }
-
-    int AddString(const std::string& str) {
-        int id = m_StringTable.size();
-        m_StringTable[id] = str;
-        return id;
-    }
-
     void DoCodegen() {
-        for (const auto& stmt : m_AST->statements) stmt->Codegen(*this);
+        for (const auto& stmt : m_AST->statements)
+            stmt->Codegen(*this, m_Context);
     }
 
    private:
-    std::unordered_map<std::string, int> m_SymbolTable{
-        {"emitln",
-         (int)BuiltInFunctions::EMITLN}};  // maps variable name with ID
-    std::unordered_map<int, std::string>
-        m_StringTable;  // maps string ID to string value
     std::vector<Instruction> m_Code;
     std::unique_ptr<ScopeNode> m_AST;
-
-    friend class BytecodeVM;
+    CompilerContext& m_Context;
 };
 
 }  // namespace EigerC

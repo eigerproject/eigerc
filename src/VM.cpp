@@ -22,37 +22,44 @@ void BytecodeVM::ExecuteBytecode() {
         m_Stack.push(operation(lhs, rhs));
     };
 
-    for (const Instruction& inst : m_Compiler.m_Code) {
+    for (const Instruction& inst : m_Compiler.GetInstructions()) {
         switch (inst.opcode) {
             case Opcode::NO_OP: continue;
 
             case Opcode::LOAD_VAR:
-                m_Stack.push(GetVar(inst.operand, inst.sourceCodeLine));
+                m_Stack.push(
+                    m_CurrentScope->GetVar(inst.operand, inst.sourceCodeLine));
                 break;
 
             case Opcode::LOAD_IMM: m_Stack.push(EiObject(inst.operand)); break;
 
             case Opcode::LOAD_STRING:
-                m_Stack.push(EiObject(m_Compiler.m_StringTable[inst.operand]));
+                m_Stack.push(EiObject(m_Context.stringTable[inst.operand]));
                 break;
 
             case Opcode::STORE_VAR: {
                 EiObject value = PopSafe(inst.sourceCodeLine);
-                SetVar(inst.operand, value, inst.sourceCodeLine);
+                m_CurrentScope->SetVar(inst.operand, value,
+                                       inst.sourceCodeLine);
                 break;
             }
 
-            case Opcode::DECL_VAR: DeclareVar(inst.operand); break;
+            case Opcode::DECL_VAR:
+                m_CurrentScope->DeclareVar(inst.operand);
+                break;
 
-            case Opcode::NEW_SCOPE: m_ScopeStack.emplace_back(); break;
+            case Opcode::NEW_SCOPE:
+                m_CurrentScope =
+                    std::make_shared<Scope>(m_Context, m_CurrentScope);
+                break;
 
             case Opcode::END_SCOPE:
-                if (m_ScopeStack.empty()) {
+                if (!m_CurrentScope->parent) {
                     throw Error(Error ::Type::RUNTIME_ERROR,
                                 "VM Scope Stack underflow",
                                 inst.sourceCodeLine);
                 }
-                m_ScopeStack.pop_back();
+                m_CurrentScope = m_CurrentScope->parent;
                 break;
 
             case Opcode::CALL:

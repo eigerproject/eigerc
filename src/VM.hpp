@@ -5,65 +5,28 @@
 #include <vector>
 
 #include "Compiler.hpp"
+#include "Context.hpp"
 #include "EiObject.hpp"
 #include "Error.hpp"
+#include "Scope.hpp"
 
 namespace EigerC {
 
-typedef std::unordered_map<int, EiObject> EiScope;
-
 class BytecodeVM {
    public:
-    BytecodeVM(BytecodeCompiler &compiler) : m_Compiler(compiler) {
-        m_ScopeStack.emplace_back();
+    BytecodeVM(BytecodeCompiler &compiler, CompilerContext &ctx)
+        : m_Compiler(compiler), m_Context(ctx) {
+        m_CurrentScope = std::make_shared<Scope>(ctx);
     }
+
     void ExecuteBytecode();
 
    private:
-    void DeclareVar(int id) {
-        m_ScopeStack[m_ScopeStack.size() - 1][id] = EiObject();
-    }
-
-    void SetVar(int id, EiObject value, int line) {
-        ExpectVarExists(id, line);
-
-        for (int i = m_ScopeStack.size() - 1; i >= 0; --i) {
-            if (m_ScopeStack[i].contains(id)) {
-                m_ScopeStack[i][id] = value;
-                break;
-            }
-        }
-    }
-
-    void ExpectVarExists(int id, int line) {
-        for (int i = m_ScopeStack.size() - 1; i >= 0; --i) {
-            if (m_ScopeStack[i].contains(id)) return;
-        }
-        for (const auto &[varName, varId] : m_Compiler.m_SymbolTable) {
-            if (varId == id) {
-                throw Error(Error::Type::NAME_ERROR,
-                            std::format("Variable {} not defined in this scope",
-                                        varName),
-                            line);
-            }
-        }
-
-        throw Error(Error::Type::NAME_ERROR,
-                    std::format("Variable with ID {} not found", id), line);
-    }
-
-    EiObject GetVar(int id, int line) {
-        ExpectVarExists(id, line);
-        for (int i = m_ScopeStack.size() - 1; i >= 0; --i) {
-            if (m_ScopeStack[i].contains(id)) { return m_ScopeStack[i][id]; }
-        }
-    }
-
-   private:
-    std::vector<EiScope> m_ScopeStack;
+    std::shared_ptr<Scope> m_CurrentScope;
     std::stack<EiObject> m_Stack;
 
     BytecodeCompiler &m_Compiler;
+    CompilerContext &m_Context;
 };
 
 }  // namespace EigerC

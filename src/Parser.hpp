@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 
+#include "Context.hpp"
 #include "Lexer.hpp"
 #include "Util.hpp"
 
@@ -22,7 +23,7 @@ struct ASTNode {
 
     virtual void PrettyPrint(int indent = 0) = 0;
 
-    virtual void Codegen(BytecodeCompiler &compiler) = 0;
+    virtual void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) = 0;
 };
 
 struct ScopeNode : public ASTNode {
@@ -36,7 +37,7 @@ struct ScopeNode : public ASTNode {
         for (const auto &stmt : statements) stmt->PrettyPrint(indent + 1);
     }
 
-    void Codegen(BytecodeCompiler &compiler) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct LetNode : public ASTNode {
@@ -53,7 +54,7 @@ struct LetNode : public ASTNode {
         if (value) value->PrettyPrint(indent + 1);
     }
 
-    void Codegen(BytecodeCompiler &compiler) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct NumberNode : public ASTNode {
@@ -65,7 +66,7 @@ struct NumberNode : public ASTNode {
         std::cout << indentStr << value << std::endl;
     }
 
-    void Codegen(BytecodeCompiler &compiler) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct StringNode : public ASTNode {
@@ -77,7 +78,7 @@ struct StringNode : public ASTNode {
         std::cout << indentStr << "\"" << value << "\"" << std::endl;
     };
 
-    void Codegen(BytecodeCompiler &compiler) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct VariableNode : public ASTNode {
@@ -90,7 +91,7 @@ struct VariableNode : public ASTNode {
         std::cout << indentStr << name << std::endl;
     }
 
-    void Codegen(BytecodeCompiler &compiler) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct BinaryOpNode : public ASTNode {
@@ -113,7 +114,7 @@ struct BinaryOpNode : public ASTNode {
         if (right) right->PrettyPrint(indent + 1);
     };
 
-    void Codegen(BytecodeCompiler &compiler) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct CallNode : public ASTNode {
@@ -132,7 +133,7 @@ struct CallNode : public ASTNode {
         for (const auto &arg : arguments) { arg->PrettyPrint(indent + 1); }
     }
 
-    void Codegen(BytecodeCompiler &compiler) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 class Parser {
