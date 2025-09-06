@@ -9,7 +9,11 @@
 
 int main() {
     std::string testSourceCode =
-        "if 0 { emitln(\"True!!!\") } else emitln(\"False!!!\")";
+        R"(
+            if 0 {
+                emitln("True!!!")
+            } else emitln("False!!!")
+        )";
 
     try {
         EigerC::Lexer lex(testSourceCode);

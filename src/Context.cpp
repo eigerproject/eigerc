@@ -17,7 +17,7 @@ std::string CompilerContext::GetVarName(int id) const {
 }
 
 int CompilerContext::AddConstant(const EiObject& c) {
-    int id = constantsTable.size();
+    int id = static_cast<int>(constantsTable.size());
     constantsTable[id] = c;
     return id;
 }

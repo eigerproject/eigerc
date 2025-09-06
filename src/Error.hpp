@@ -5,21 +5,21 @@
 
 namespace EigerC {
 
-class Error {
+class Error : public std::exception {
    public:
     enum class Type { UNKNOWN, SYNTAX_ERROR, NAME_ERROR, RUNTIME_ERROR };
 
     Error(Type type, const std::string& message, int line = -1)
-        : m_Type(type), m_Message(message), m_Line(line) {}
+        : type(type), message(message), line(line) {}
 
-    Type GetType() const { return m_Type; }
-    const std::string& GetMessage() const { return m_Message; }
-    int GetLine() const { return m_Line; }
+    [[nodiscard]] Type GetType() const { return type; }
+    [[nodiscard]] const std::string& GetMessage() const { return message; }
+    [[nodiscard]] int GetLine() const { return line; }
 
    private:
-    Type m_Type;
-    std::string m_Message;
-    int m_Line;
+    Type type;
+    std::string message;
+    int line;
 };
 
 }  // namespace EigerC

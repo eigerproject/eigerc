@@ -197,7 +197,7 @@ class Parser {
     std::unique_ptr<ASTNode> ParseStatement();
     std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0);
     std::unique_ptr<ASTNode> ParsePrimary();
-    std::unique_ptr<ASTNode> ParseCall(std::string functionName, int line);
+    std::unique_ptr<ASTNode> ParseCall(const std::string& functionName, int line);
 
     std::unique_ptr<ASTNode> ParseLetStatement();
 
@@ -207,7 +207,8 @@ class Parser {
 
     void Advance() { m_CurrentToken = m_Lexer.GetNextToken(); }
     void Expect(TokenType type);
-    int GetPrecedence(TokenType type);
+
+    static int GetPrecedence(TokenType type);
 
    private:
     Lexer &m_Lexer;

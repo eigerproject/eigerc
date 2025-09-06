@@ -18,7 +18,7 @@ class BytecodeCompiler {
         : m_AST(std::move(ast)), m_Context(ctx) {}
     std::vector<Instruction>& GetInstructions() { return m_Code; }
 
-    int GetInstructionPointer() { return m_Code.size(); }
+    int GetInstructionPointer() { return static_cast<int>(m_Code.size()); }
 
     void AddInstruction(Opcode opcode, int line, double operand = 0) {
         m_Code.emplace_back(GetInstructionPointer(), opcode, operand, line);

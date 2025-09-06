@@ -42,7 +42,7 @@ Token Lexer::Identifier() {
         result += m_CurrentChar;
         Advance();
     }
-    return Token(TokenType::IDENTIFIER, m_Line, result);
+    return {TokenType::IDENTIFIER, m_Line, result};
 }
 
 Token Lexer::Number() {
@@ -52,7 +52,7 @@ Token Lexer::Number() {
         result += m_CurrentChar;
         Advance();
     }
-    return Token(TokenType::NUMBER, m_Line, result);
+    return {TokenType::NUMBER, m_Line, result};
 }
 
 Token Lexer::String() {
@@ -87,7 +87,7 @@ Token Lexer::String() {
 
     Advance();
 
-    return Token(TokenType::STRING, m_Line, result);
+    return {TokenType::STRING, m_Line, result};
 }
 
 Token Lexer::GetNextToken() {
@@ -106,18 +106,18 @@ Token Lexer::GetNextToken() {
         }
 
         switch (m_CurrentChar) {
-            case '+': Advance(); return Token(TokenType::PLUS, m_Line);
-            case '-': Advance(); return Token(TokenType::MINUS, m_Line);
-            case '*': Advance(); return Token(TokenType::MULTIPLY, m_Line);
-            case '/': Advance(); return Token(TokenType::DIVIDE, m_Line);
-            case '(': Advance(); return Token(TokenType::LPAREN, m_Line);
-            case ')': Advance(); return Token(TokenType::RPAREN, m_Line);
-            case ',': Advance(); return Token(TokenType::COMMA, m_Line);
-            case '=': Advance(); return Token(TokenType::ASSIGN, m_Line);
-            case '{': Advance(); return Token(TokenType::LBRACE, m_Line);
-            case '}': Advance(); return Token(TokenType::RBRACE, m_Line);
-            case '<': Advance(); return Token(TokenType::LANGLEBRACKET, m_Line);
-            case '>': Advance(); return Token(TokenType::RANGLEBRACKET, m_Line);
+            case '+': Advance(); return {TokenType::PLUS, m_Line};
+            case '-': Advance(); return {TokenType::MINUS, m_Line};
+            case '*': Advance(); return {TokenType::MULTIPLY, m_Line};
+            case '/': Advance(); return {TokenType::DIVIDE, m_Line};
+            case '(': Advance(); return {TokenType::LPAREN, m_Line};
+            case ')': Advance(); return {TokenType::RPAREN, m_Line};
+            case ',': Advance(); return {TokenType::COMMA, m_Line};
+            case '=': Advance(); return {TokenType::ASSIGN, m_Line};
+            case '{': Advance(); return {TokenType::LBRACE, m_Line};
+            case '}': Advance(); return {TokenType::RBRACE, m_Line};
+            case '<': Advance(); return {TokenType::LANGLEBRACKET, m_Line};
+            case '>': Advance(); return {TokenType::RANGLEBRACKET, m_Line};
             case '"': return String();
             default:
                 throw Error(
@@ -126,7 +126,7 @@ Token Lexer::GetNextToken() {
                     m_Line);
         }
     }
-    return Token(TokenType::ENDOFFILE, m_Line);
+    return {TokenType::ENDOFFILE, m_Line};
 }
 
 }  // namespace EigerC

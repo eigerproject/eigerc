@@ -15,18 +15,18 @@ namespace EigerC {
 class BytecodeVM {
    public:
     BytecodeVM(BytecodeCompiler &compiler, CompilerContext &ctx)
-        : m_Compiler(compiler), m_Context(ctx) {
-        m_CurrentScope = std::make_shared<Scope>(ctx);
+        : compiler(compiler), ctx(ctx) {
+        currentScope = std::make_shared<Scope>(ctx);
     }
 
     void ExecuteBytecode();
 
    private:
-    std::shared_ptr<Scope> m_CurrentScope;
-    std::stack<EiObject> m_Stack;
+    std::shared_ptr<Scope> currentScope;
+    std::stack<EiObject> stack;
 
-    BytecodeCompiler &m_Compiler;
-    CompilerContext &m_Context;
+    BytecodeCompiler &compiler;
+    CompilerContext &ctx;
 };
 
 }  // namespace EigerC

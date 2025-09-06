@@ -10,7 +10,7 @@ void Scope::DeclareVar(int id) {
     values[id] = EiObject();
 }
 
-void Scope::SetVar(int id, EiObject value, int line) {
+void Scope::SetVar(int id, const EiObject& value, int line) {
     ExpectVarExists(id, line);
 
     Scope *scope = this;

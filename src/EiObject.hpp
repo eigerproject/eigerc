@@ -11,10 +11,10 @@ struct EiObject {
     std::variant<std::monostate, double, std::string> value;
 
     EiObject() = default;
-    EiObject(double val) : value(val) {}
-    EiObject(std::string val) : value(std::move(val)) {}
+    explicit EiObject(double val) : value(val) {}
+    explicit EiObject(std::string val) : value(std::move(val)) {}
 
-    std::string AsString() const {
+    [[nodiscard]] std::string AsString() const {
         if (std::holds_alternative<std::monostate>(value)) return "nix";
         if (std::holds_alternative<double>(value)) {
             std::ostringstream oss;
@@ -33,7 +33,7 @@ struct EiObject {
         return false;
     }
 
-    EiObject Add(const EiObject& other) const {
+    [[nodiscard]] EiObject Add(const EiObject& other) const {
         if (std::holds_alternative<std::monostate>(value) ||
             std::holds_alternative<std::monostate>(other.value))
             return EiObject();
@@ -49,7 +49,7 @@ struct EiObject {
     }
 
     template <typename F>
-    EiObject BinaryNumericOp(const EiObject& other, F func) const {
+    [[nodiscard]] EiObject BinaryNumericOp(const EiObject& other, F func) const {
         if (std::holds_alternative<double>(value) &&
             std::holds_alternative<double>(other.value)) {
             return EiObject(
@@ -58,22 +58,22 @@ struct EiObject {
         return EiObject();
     }
 
-    EiObject Subtract(const EiObject& other) const {
+    [[nodiscard]] EiObject Subtract(const EiObject& other) const {
         return BinaryNumericOp(other, std::minus<>());
     }
 
-    EiObject Multiply(const EiObject& other) const {
+    [[nodiscard]] EiObject Multiply(const EiObject& other) const {
         return BinaryNumericOp(other, std::multiplies<>());
     }
 
-    EiObject Divide(const EiObject& other) const {
+    [[nodiscard]] EiObject Divide(const EiObject& other) const {
         if (std::holds_alternative<double>(value) &&
             std::holds_alternative<double>(other.value)) {
             double denom = std::get<double>(other.value);
-            if (denom == 0.0) return EiObject();
+            if (denom == 0.0) return {};
             return EiObject(std::get<double>(value) / denom);
         }
-        return EiObject();
+        return {};
     }
 };
 

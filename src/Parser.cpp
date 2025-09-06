@@ -56,7 +56,7 @@ std::unique_ptr<ASTNode> Parser::ParseStatement() {
 
 std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
     std::unique_ptr<ASTNode> left = ParsePrimary();
-    if (!left) return NULL;
+    if (!left) return nullptr;
 
     while (true) {
         TokenType op = m_CurrentToken.type;
@@ -112,7 +112,7 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
         return std::make_unique<VariableNode>(identValue, line);
     }
 
-    if (m_CurrentToken.type == TokenType::ENDOFFILE) return NULL;
+    if (m_CurrentToken.type == TokenType::ENDOFFILE) return nullptr;
 
     throw Error(Error::Type::SYNTAX_ERROR,
                 std::format("Unexpected factor {}",
@@ -131,7 +131,7 @@ void Parser::Expect(TokenType type) {
     Advance();
 }
 
-std::unique_ptr<ASTNode> Parser::ParseCall(std::string functionName, int line) {
+std::unique_ptr<ASTNode> Parser::ParseCall(const std::string& functionName, int line) {
     Expect(TokenType::LPAREN);
 
     std::vector<std::unique_ptr<ASTNode>> arguments;

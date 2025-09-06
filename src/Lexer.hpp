@@ -36,7 +36,7 @@ struct Token {
 
 class Lexer {
    public:
-    Lexer(const std::string& input);
+    explicit Lexer(const std::string& input);
     Token GetNextToken();
 
    private:
