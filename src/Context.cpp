@@ -16,7 +16,7 @@ std::string CompilerContext::GetVarName(int id) const {
     return "<UNKNOWN_VAR>";
 }
 
-int CompilerContext::AddConstant(const EiObject& c) {
+int CompilerContext::AddConstant(const std::shared_ptr<EiObject>& c) {
     int id = static_cast<int>(constantsTable.size());
     constantsTable[id] = c;
     return id;

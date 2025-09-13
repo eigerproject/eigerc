@@ -9,10 +9,13 @@
 namespace EigerC {
 
 enum class Opcode;
+enum class DType;
 
 namespace Util {
 
 std::string_view TokenTypeToString(TokenType type);
+
+std::string_view ObjectDTypeToString(DType type);
 
 std::string_view OpcodeToString(Opcode opcode);
 

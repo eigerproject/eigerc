@@ -50,8 +50,9 @@ void VariableNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
 }
 
 void StringNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
-    compiler.AddInstruction(Opcode::LOAD_CONST, line,
-                            ctx.AddConstant(EiObject(value)));
+    compiler.AddInstruction(
+        Opcode::LOAD_CONST, line,
+        ctx.AddConstant(std::make_shared<StringObject>(line, value)));
 }
 
 void BinaryOpNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {

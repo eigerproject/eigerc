@@ -7,10 +7,10 @@
 namespace EigerC {
 
 void Scope::DeclareVar(int id) {
-    values[id] = EiObject();
+    values[id] = std::make_shared<NixObject>();
 }
 
-void Scope::SetVar(int id, const EiObject& value, int line) {
+void Scope::SetVar(int id, const std::shared_ptr<EiObject> &value, int line) {
     ExpectVarExists(id, line);
 
     Scope *scope = this;
@@ -37,7 +37,7 @@ void Scope::ExpectVarExists(int id, int line) {
                 line);
 }
 
-EiObject Scope::GetVar(int id, int line) {
+std::shared_ptr<EiObject> Scope::GetVar(int id, int line) {
     ExpectVarExists(id, line);
 
     Scope *scope = this;

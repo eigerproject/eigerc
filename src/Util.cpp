@@ -1,5 +1,6 @@
 #include "Util.hpp"
 
+#include "EiObject.hpp"
 #include "Opcode.hpp"
 
 namespace EigerC {
@@ -22,6 +23,16 @@ std::string_view TokenTypeToString(TokenType type) {
         case TokenType::LPAREN: return "LPAREN";
         case TokenType::RPAREN: return "RPAREN";
         default: return "UNKNOWN_TOKEN";
+    }
+}
+
+std::string_view ObjectDTypeToString(DType type) {
+    switch (type) {
+        case DType::UNKNOWN: return "UNKNOWN";
+        case DType::STRING: return "STRING";
+        case DType::NIX: return "NIX";
+        case DType::NUMBER: return "NUMBER";
+        default: return "UNIDENT";
     }
 }
 
@@ -52,6 +63,7 @@ std::string_view ErrorTypeToString(Error::Type type) {
         case Error::Type::SYNTAX_ERROR: return "SYNTAX_ERROR";
         case Error::Type::NAME_ERROR: return "NAME_ERROR";
         case Error::Type::RUNTIME_ERROR: return "RUNTIME_ERROR";
+        case Error::Type::TYPE_ERROR: return "TYPE_ERROR";
         default: return "UNRECOGNIZED_ERROR_TYPE";
     }
 }

@@ -23,7 +23,7 @@ class BytecodeVM {
 
    private:
     std::shared_ptr<Scope> currentScope;
-    std::stack<EiObject> stack;
+    std::stack<std::shared_ptr<EiObject>> stack;
 
     BytecodeCompiler &compiler;
     CompilerContext &ctx;

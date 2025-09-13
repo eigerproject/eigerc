@@ -1,1 +1,2 @@
-if 1 emitln("hi")
+if 1 emitln("hi :)")
+else emitln("evil hi >:)")

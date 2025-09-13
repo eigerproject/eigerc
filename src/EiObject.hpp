@@ -1,80 +1,149 @@
 #ifndef _EIGERC_EIOBJECT_HPP_
 #define _EIGERC_EIOBJECT_HPP_
 
+#include <format>
+#include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <variant>
 
+#include "Error.hpp"
+#include "Util.hpp"
+
 namespace EigerC {
 
-struct EiObject {
-    std::variant<std::monostate, double, std::string> value;
+enum class DType { UNKNOWN, NUMBER, STRING, NIX };
 
+class EiObject {
+   public:
     EiObject() = default;
-    explicit EiObject(double val) : value(val) {}
-    explicit EiObject(std::string val) : value(std::move(val)) {}
+    virtual ~EiObject() = default;
 
-    [[nodiscard]] std::string AsString() const {
-        if (std::holds_alternative<std::monostate>(value)) return "nix";
-        if (std::holds_alternative<double>(value)) {
-            std::ostringstream oss;
-            oss << std::defaultfloat << std::get<double>(value);
-            return oss.str();
-        }
-        return std::get<std::string>(value);
+    virtual std::string AsString() const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("{} cannot implicitly be converted to string",
+                                Util::ObjectDTypeToString(type)),
+                    line);
     }
 
-    bool IsTruthy() {
-        if (std::holds_alternative<std::monostate>(value)) return false;
-        if (std::holds_alternative<double>(value))
-            return std::get<double>(value) != 0.0;
-        if (std::holds_alternative<std::string>(value))
-            return !std::get<std::string>(value).empty();
-        return false;
+    virtual double AsNumber() const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("{} cannot implicitly be converted to number",
+                                Util::ObjectDTypeToString(type)),
+                    line);
     }
 
-    [[nodiscard]] EiObject Add(const EiObject& other) const {
-        if (std::holds_alternative<std::monostate>(value) ||
-            std::holds_alternative<std::monostate>(other.value))
-            return EiObject();
+    virtual std::shared_ptr<EiObject> operator+(const EiObject &other) const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Operator `+` to object types {} and {}",
+                                Util::ObjectDTypeToString(type),
+                                Util::ObjectDTypeToString(other.type)),
+                    line);
+    };
 
-        if (std::holds_alternative<double>(value) &&
-            std::holds_alternative<double>(other.value))
-            return EiObject(std::get<double>(value) +
-                            std::get<double>(other.value));
+    virtual std::shared_ptr<EiObject> operator-(const EiObject &other) const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Operator `-` to object types {} and {}",
+                                Util::ObjectDTypeToString(type),
+                                Util::ObjectDTypeToString(other.type)),
+                    line);
+    };
 
-        std::string lhs = AsString();
-        std::string rhs = other.AsString();
-        return EiObject(lhs + rhs);
+    virtual std::shared_ptr<EiObject> operator*(const EiObject &other) const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Operator `*` to object types {} and {}",
+                                Util::ObjectDTypeToString(type),
+                                Util::ObjectDTypeToString(other.type)),
+                    line);
+    };
+
+    virtual std::shared_ptr<EiObject> operator/(const EiObject &other) const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Operator `+` to object types {} and {}",
+                                Util::ObjectDTypeToString(type),
+                                Util::ObjectDTypeToString(other.type)),
+                    line);
+    };
+
+    virtual operator bool() const { return true; };
+
+    int line = -1;
+    DType type = DType::UNKNOWN;
+};
+
+class NixObject : public EiObject {
+   public:
+    std::string AsString() const override { return "nix"; }
+    operator bool() const override { return false; };
+};
+
+class NumberObject : public EiObject {
+   public:
+    NumberObject(int line, double val = 0) {
+        this->line = line;
+        value = val;
+        type = DType::NUMBER;
     }
 
-    template <typename F>
-    [[nodiscard]] EiObject BinaryNumericOp(const EiObject& other, F func) const {
-        if (std::holds_alternative<double>(value) &&
-            std::holds_alternative<double>(other.value)) {
-            return EiObject(
-                func(std::get<double>(value), std::get<double>(other.value)));
-        }
-        return EiObject();
+    double AsNumber() const override { return value; }
+    std::string AsString() const override { return std::to_string(value); }
+
+    std::shared_ptr<EiObject> operator+(const EiObject &other) const override {
+        auto result = std::make_shared<NumberObject>(line);
+        result->value = value + other.AsNumber();
+        return result;
     }
 
-    [[nodiscard]] EiObject Subtract(const EiObject& other) const {
-        return BinaryNumericOp(other, std::minus<>());
+    std::shared_ptr<EiObject> operator-(const EiObject &other) const override {
+        auto result = std::make_shared<NumberObject>(line);
+        result->value = value - other.AsNumber();
+        return result;
     }
 
-    [[nodiscard]] EiObject Multiply(const EiObject& other) const {
-        return BinaryNumericOp(other, std::multiplies<>());
+    std::shared_ptr<EiObject> operator*(const EiObject &other) const override {
+        auto result = std::make_shared<NumberObject>(line);
+        result->value = value * other.AsNumber();
+        return result;
     }
 
-    [[nodiscard]] EiObject Divide(const EiObject& other) const {
-        if (std::holds_alternative<double>(value) &&
-            std::holds_alternative<double>(other.value)) {
-            double denom = std::get<double>(other.value);
-            if (denom == 0.0) return {};
-            return EiObject(std::get<double>(value) / denom);
-        }
-        return {};
+    std::shared_ptr<EiObject> operator/(const EiObject &other) const override {
+        auto result = std::make_shared<NumberObject>(line);
+        result->value = value / other.AsNumber();
+        return result;
     }
+
+    operator bool() const override { return value != 0.0; };
+
+    double value = 0;
+};
+
+class StringObject : public EiObject {
+   public:
+    StringObject(int line) {
+        this->line = line;
+        type = DType::STRING;
+    }
+    StringObject(int line, std::string v) : StringObject(line) { value = v; }
+
+    double AsNumber() const override { return std::stod(value); }
+    std::string AsString() const override { return value; }
+
+    std::shared_ptr<EiObject> operator+(const EiObject &other) const override {
+        auto result = std::make_shared<StringObject>(line);
+        result->value = value + other.AsString();
+        return result;
+    }
+
+    std::shared_ptr<EiObject> operator*(const EiObject &other) const override {
+        auto result = std::make_shared<StringObject>(line);
+        int times = other.AsNumber();
+        for (int i = 0; i < times; ++i) result->value += value;
+
+        return result;
+    }
+
+    std::string value;
 };
 
 }  // namespace EigerC
