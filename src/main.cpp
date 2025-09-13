@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "Compiler.hpp"
 #include "Error.hpp"
@@ -8,15 +9,15 @@
 #include "VM.hpp"
 
 int main() {
-    std::string testSourceCode =
-        R"(
-            if 0 {
-                emitln("True!!!")
-            } else emitln("False!!!")
-        )";
+    std::string sourceCode;
+
+    std::ifstream fStream("fixtures/test.ei");
+
+    std::string t;
+    while (std::getline(fStream, t)) sourceCode += t;
 
     try {
-        EigerC::Lexer lex(testSourceCode);
+        EigerC::Lexer lex(sourceCode);
         EigerC::Parser parser(lex);
 
         EigerC::CompilerContext ctx;
