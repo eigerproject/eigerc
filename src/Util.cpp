@@ -22,7 +22,7 @@ std::string_view TokenTypeToString(TokenType type) {
         case TokenType::COMMA: return "COMMA";
         case TokenType::LPAREN: return "LPAREN";
         case TokenType::RPAREN: return "RPAREN";
-        default: return "UNKNOWN_TOKEN";
+        default: return "ADD_TO_STRING_CONVERSION";
     }
 }
 
@@ -32,7 +32,8 @@ std::string_view ObjectDTypeToString(DType type) {
         case DType::STRING: return "STRING";
         case DType::NIX: return "NIX";
         case DType::NUMBER: return "NUMBER";
-        default: return "UNIDENT";
+        case DType::FUNCTION: return "FUNCTION";
+        default: return "ADD_TO_STRING_CONVERSION";
     }
 }
 
@@ -53,7 +54,7 @@ std::string_view OpcodeToString(Opcode opcode) {
         case Opcode::DIVIDE: return "DIVIDE";
         case Opcode::JUMP: return "JUMP";
         case Opcode::JUMP_IF_FALSE: return "JUMP_IF_FALSE";
-        default: return "UNKNOWN_OPCODE";
+        default: return "ADD_TO_STRING_CONVERSION";
     }
 }
 
@@ -64,7 +65,7 @@ std::string_view ErrorTypeToString(Error::Type type) {
         case Error::Type::NAME_ERROR: return "NAME_ERROR";
         case Error::Type::RUNTIME_ERROR: return "RUNTIME_ERROR";
         case Error::Type::TYPE_ERROR: return "TYPE_ERROR";
-        default: return "UNRECOGNIZED_ERROR_TYPE";
+        default: return "ADD_TO_STRING_CONVERSION";
     }
 }
 

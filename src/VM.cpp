@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "NumberObject.hpp"
+
 namespace EigerC {
 
 void BytecodeVM::ExecuteBytecode() {
@@ -21,7 +23,6 @@ void BytecodeVM::ExecuteBytecode() {
         stack.push(operation(lhs, rhs));
     };
 
-    const auto& instructions = compiler.GetInstructions();
     const int instructionCount = static_cast<int>(instructions.size());
 
     for (int ip = 0; ip < instructionCount; ++ip) {

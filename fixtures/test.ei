@@ -1,2 +1,6 @@
-if 1 emitln("hi :)")
-else emitln("evil hi >:)")
+func SomeFunction(a, b, c) {
+    ~ something
+}
+
+emitln(SomeFunction)
+emitln(func() > 2)

@@ -131,7 +131,8 @@ void Parser::Expect(TokenType type) {
     Advance();
 }
 
-std::unique_ptr<ASTNode> Parser::ParseCall(const std::string& functionName, int line) {
+std::unique_ptr<ASTNode> Parser::ParseCall(const std::string& functionName,
+                                           int line) {
     Expect(TokenType::LPAREN);
 
     std::vector<std::unique_ptr<ASTNode>> arguments;

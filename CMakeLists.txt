@@ -16,4 +16,4 @@ add_executable(${PROJECT_NAME}
     src/Scope.cpp
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE src)
+target_include_directories(${PROJECT_NAME} PRIVATE src src/EiObjects)

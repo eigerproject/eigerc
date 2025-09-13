@@ -1,6 +1,9 @@
 #include "Compiler.hpp"
 
 #include "Error.hpp"
+#include "FunctionObject.hpp"
+#include "NumberObject.hpp"
+#include "StringObject.hpp"
 
 namespace EigerC {
 
@@ -83,6 +86,23 @@ void CallNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
 }
 
 void EigerC::FunctionNode::Codegen(BytecodeCompiler &compiler,
-                                   CompilerContext &ctx) {}
+                                   CompilerContext &ctx) {
+    std::unique_ptr<ScopeNode> root = std::make_unique<ScopeNode>(line);
+    root->statements.push_back(std::move(body));
+
+    BytecodeCompiler newCompiler(std::move(root), ctx);
+    newCompiler.DoCodegen();
+
+    auto constv = ctx.AddConstant(std::make_shared<BytecodeFunctionObject>(
+        line, ctx, functionName, parameters, newCompiler.GetInstructions()));
+
+    compiler.AddInstruction(Opcode::LOAD_CONST, line, constv);
+
+    if (!this->functionName.empty()) {
+        int id = ctx.GetVariableID(functionName);
+        compiler.AddInstruction(Opcode::DECL_VAR, line, id);
+        compiler.AddInstruction(Opcode::STORE_VAR, line, id);
+    }
+}
 
 }  // namespace EigerC

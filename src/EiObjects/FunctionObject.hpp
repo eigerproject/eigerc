@@ -1,0 +1,66 @@
+#ifndef _EIGERC_FUNCTIONOBJECT_HPP_
+#define _EIGERC_FUNCTIONOBJECT_HPP_
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "Bytecode.hpp"
+#include "EiObject.hpp"
+#include "Scope.hpp"
+#include "VM.hpp"
+
+namespace EigerC {
+
+class FunctionObject : public EiObject {
+   public:
+    FunctionObject() = default;
+    FunctionObject(std::string name, std::vector<std::string> argNames)
+        : name(name), argNames(argNames) {
+        type = DType::FUNCTION;
+    }
+
+    virtual ~FunctionObject() = default;
+
+    virtual void Execute(const std::vector<std::shared_ptr<EiObject>>& values,
+                         std::shared_ptr<Scope> scope) = 0;
+
+    std::string name;
+    std::vector<std::string> argNames;
+};
+
+class BytecodeFunctionObject : public FunctionObject {
+   public:
+    BytecodeFunctionObject(int line, CompilerContext& ctx, std::string name,
+                           std::vector<std::string> argNames,
+                           std::vector<Instruction> code)
+        : ctx(ctx), code(code), FunctionObject(name, argNames) {
+        this->line = line;
+    }
+
+    void Execute(const std::vector<std::shared_ptr<EiObject>>& values,
+                 std::shared_ptr<Scope> scope) override {
+        auto fScope = std::make_shared<Scope>(ctx, scope);
+        BytecodeVM vm(code, ctx, fScope);
+
+        for (size_t i = 0; i < argNames.size(); ++i) {
+            int id = ctx.GetVariableID(argNames[i]);
+            fScope->DeclareVar(id);
+            fScope->SetVar(id, values[i], line);
+        }
+
+        vm.ExecuteBytecode();
+    }
+
+    std::string AsString() const override {
+        return std::format("<function {}>", name);
+    }
+
+   private:
+    std::vector<Instruction> code;
+    CompilerContext& ctx;
+};
+
+}  // namespace EigerC
+
+#endif  // _EIGERC_FUNCTIONOBJECT_HPP_
