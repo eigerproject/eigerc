@@ -3,4 +3,4 @@ func SomeFunction(a, b, c) {
 }
 
 emitln(SomeFunction)
-emitln(func() > 2)
+emitln(func(a, b, c) > a + b + c)

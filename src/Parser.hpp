@@ -77,9 +77,9 @@ struct FunctionNode : public ASTNode {
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
-        std::cout << indentStr << "FUNCTION " << functionName << "(";
+        std::cout << indentStr << "FUNCTION " << functionName << "( ";
         for (const auto &param : parameters)
-            std::cout << indentStr << param << " ";
+            std::cout << param << " ";
         std::cout << ")" << std::endl;
         if (body) body->PrettyPrint(indent + 1);
     }
