@@ -186,7 +186,7 @@ struct CallNode : public ASTNode {
 class Parser {
    public:
     Parser(Lexer &lexer)
-        : m_Lexer(lexer), m_CurrentToken(TokenType::UNKNOWN, -1) {
+        : lexer(lexer), currentToken(TokenType::UNKNOWN, -1) {
         Advance();
     }
 
@@ -205,14 +205,14 @@ class Parser {
 
     std::unique_ptr<ASTNode> ParseFunctionBody();
 
-    void Advance() { m_CurrentToken = m_Lexer.GetNextToken(); }
+    void Advance() { currentToken = lexer.GetNextToken(); }
     void Expect(TokenType type);
 
     static int GetPrecedence(TokenType type);
 
    private:
-    Lexer &m_Lexer;
-    Token m_CurrentToken;
+    Lexer &lexer;
+    Token currentToken;
 };
 
 }  // namespace EigerC

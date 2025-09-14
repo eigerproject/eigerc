@@ -49,11 +49,11 @@ class Lexer {
     Token String();
 
    private:
-    int m_Line;
+    int line;
 
-    std::string m_Input;
-    size_t m_Pos;
-    char m_CurrentChar;
+    std::string input;
+    size_t pos;
+    char currentChar;
 };
 
 }  // namespace EigerC

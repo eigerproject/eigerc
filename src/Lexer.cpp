@@ -7,126 +7,126 @@
 namespace EigerC {
 
 Lexer::Lexer(const std::string& input) {
-    m_Input = input;
-    m_Pos = 0;
-    m_CurrentChar = m_Input.empty() ? '\0' : m_Input[m_Pos];
+    this->input = input;
+    pos = 0;
+    currentChar = input.empty() ? '\0' : input[pos];
 
-    m_Line = 1;
+    line = 1;
 }
 
 void Lexer::Advance() {
-    if (m_CurrentChar == '\n') m_Line++;
+    if (currentChar == '\n') line++;
 
-    m_Pos++;
+    pos++;
 
-    if (m_Pos >= m_Input.size()) {
-        m_CurrentChar = '\0';
+    if (pos >= input.size()) {
+        currentChar = '\0';
     } else {
-        m_CurrentChar = m_Input[m_Pos];
+        currentChar = input[pos];
     }
 }
 
 void Lexer::SkipWhitespace() {
-    while (m_CurrentChar != '\0' && isspace(m_CurrentChar)) Advance();
+    while (currentChar != '\0' && isspace(currentChar)) Advance();
 }
 
 char Lexer::Peek() {
-    if (m_Pos + 1 < m_Input.size()) return m_Input[m_Pos + 1];
+    if (pos + 1 < input.size()) return input[pos + 1];
     return '\0';
 }
 
 Token Lexer::Identifier() {
     std::string result;
-    while (m_CurrentChar != '\0' &&
-           (isalnum(m_CurrentChar) || m_CurrentChar == '_')) {
-        result += m_CurrentChar;
+    while (currentChar != '\0' &&
+           (isalnum(currentChar) || currentChar == '_')) {
+        result += currentChar;
         Advance();
     }
-    return {TokenType::IDENTIFIER, m_Line, result};
+    return {TokenType::IDENTIFIER, line, result};
 }
 
 Token Lexer::Number() {
     std::string result;
-    while (m_CurrentChar != '\0' &&
-           (isdigit(m_CurrentChar) || m_CurrentChar == '.')) {
-        result += m_CurrentChar;
+    while (currentChar != '\0' &&
+           (isdigit(currentChar) || currentChar == '.')) {
+        result += currentChar;
         Advance();
     }
-    return {TokenType::NUMBER, m_Line, result};
+    return {TokenType::NUMBER, line, result};
 }
 
 Token Lexer::String() {
     std::string result;
-    if (m_CurrentChar != '"')
+    if (currentChar != '"')
         throw Error(Error::Type::SYNTAX_ERROR, std::format("Expected '\"'"),
-                    m_Line);
+                    line);
 
     Advance();
-    while (m_CurrentChar != '\0' && m_CurrentChar != '"') {
-        if (m_CurrentChar == '\\') {
+    while (currentChar != '\0' && currentChar != '"') {
+        if (currentChar == '\\') {
             Advance();
-            if (m_CurrentChar == 'n') {
+            if (currentChar == 'n') {
                 result += '\n';
-            } else if (m_CurrentChar == 't') {
+            } else if (currentChar == 't') {
                 result += '\t';
-            } else if (m_CurrentChar == '"') {
+            } else if (currentChar == '"') {
                 result += '"';
             } else {
-                result += m_CurrentChar;  // Add the escaped character
+                result += currentChar;  // Add the escaped character
             }
         } else {
-            result += m_CurrentChar;
+            result += currentChar;
         }
         Advance();
     }
 
-    if (m_CurrentChar != '"') {
+    if (currentChar != '"') {
         throw Error(Error::Type::SYNTAX_ERROR,
-                    std::format("Unterminated string literal"), m_Line);
+                    std::format("Unterminated string literal"), line);
     }
 
     Advance();
 
-    return {TokenType::STRING, m_Line, result};
+    return {TokenType::STRING, line, result};
 }
 
 Token Lexer::GetNextToken() {
-    while (m_CurrentChar != '\0') {
-        if (isspace(m_CurrentChar)) {
+    while (currentChar != '\0') {
+        if (isspace(currentChar)) {
             SkipWhitespace();
             continue;
         }
-        if (isalpha(m_CurrentChar) || m_CurrentChar == '_') return Identifier();
-        if (isdigit(m_CurrentChar)) return Number();
+        if (isalpha(currentChar) || currentChar == '_') return Identifier();
+        if (isdigit(currentChar)) return Number();
 
-        if (m_CurrentChar == '~') {
-            while (m_CurrentChar != '\0' && m_CurrentChar != '\n') Advance();
+        if (currentChar == '~') {
+            while (currentChar != '\0' && currentChar != '\n') Advance();
             SkipWhitespace();
             continue;
         }
 
-        switch (m_CurrentChar) {
-            case '+': Advance(); return {TokenType::PLUS, m_Line};
-            case '-': Advance(); return {TokenType::MINUS, m_Line};
-            case '*': Advance(); return {TokenType::MULTIPLY, m_Line};
-            case '/': Advance(); return {TokenType::DIVIDE, m_Line};
-            case '(': Advance(); return {TokenType::LPAREN, m_Line};
-            case ')': Advance(); return {TokenType::RPAREN, m_Line};
-            case ',': Advance(); return {TokenType::COMMA, m_Line};
-            case '=': Advance(); return {TokenType::ASSIGN, m_Line};
-            case '{': Advance(); return {TokenType::LBRACE, m_Line};
-            case '}': Advance(); return {TokenType::RBRACE, m_Line};
-            case '<': Advance(); return {TokenType::LANGLEBRACKET, m_Line};
-            case '>': Advance(); return {TokenType::RANGLEBRACKET, m_Line};
+        switch (currentChar) {
+            case '+': Advance(); return {TokenType::PLUS, line};
+            case '-': Advance(); return {TokenType::MINUS, line};
+            case '*': Advance(); return {TokenType::MULTIPLY, line};
+            case '/': Advance(); return {TokenType::DIVIDE, line};
+            case '(': Advance(); return {TokenType::LPAREN, line};
+            case ')': Advance(); return {TokenType::RPAREN, line};
+            case ',': Advance(); return {TokenType::COMMA, line};
+            case '=': Advance(); return {TokenType::ASSIGN, line};
+            case '{': Advance(); return {TokenType::LBRACE, line};
+            case '}': Advance(); return {TokenType::RBRACE, line};
+            case '<': Advance(); return {TokenType::LANGLEBRACKET, line};
+            case '>': Advance(); return {TokenType::RANGLEBRACKET, line};
             case '"': return String();
             default:
                 throw Error(
                     Error::Type::SYNTAX_ERROR,
-                    std::format("Unexpected character: `{}`", m_CurrentChar),
-                    m_Line);
+                    std::format("Unexpected character: `{}`", currentChar),
+                    line);
         }
     }
-    return {TokenType::ENDOFFILE, m_Line};
+    return {TokenType::ENDOFFILE, line};
 }
 
 }  // namespace EigerC

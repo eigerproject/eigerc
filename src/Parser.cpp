@@ -7,7 +7,7 @@ namespace EigerC {
 std::unique_ptr<ScopeNode> Parser::Parse() {
     std::unique_ptr<ScopeNode> globalScope = std::make_unique<ScopeNode>(1);
 
-    while (m_CurrentToken.type != TokenType::ENDOFFILE)
+    while (currentToken.type != TokenType::ENDOFFILE)
         globalScope->statements.push_back(std::move(ParseStatement()));
 
     return globalScope;
@@ -15,12 +15,12 @@ std::unique_ptr<ScopeNode> Parser::Parse() {
 
 std::unique_ptr<ASTNode> Parser::ParseScope() {
     std::unique_ptr<ScopeNode> scope =
-        std::make_unique<ScopeNode>(m_CurrentToken.line);
+        std::make_unique<ScopeNode>(currentToken.line);
 
     Expect(TokenType::LBRACE);
 
-    while (m_CurrentToken.type != TokenType::ENDOFFILE &&
-           m_CurrentToken.type != TokenType::RBRACE)
+    while (currentToken.type != TokenType::ENDOFFILE &&
+           currentToken.type != TokenType::RBRACE)
         scope->statements.push_back(std::move(ParseStatement()));
 
     Expect(TokenType::RBRACE);
@@ -29,24 +29,24 @@ std::unique_ptr<ASTNode> Parser::ParseScope() {
 }
 
 std::unique_ptr<ASTNode> Parser::ParseStatement() {
-    if (m_CurrentToken.type == TokenType::LBRACE) return ParseScope();
+    if (currentToken.type == TokenType::LBRACE) return ParseScope();
 
-    if (m_CurrentToken.type == TokenType::IDENTIFIER) {
-        if (m_CurrentToken.lexeme == "let") return ParseLetStatement();
-        if (m_CurrentToken.lexeme == "if") {
+    if (currentToken.type == TokenType::IDENTIFIER) {
+        if (currentToken.lexeme == "let") return ParseLetStatement();
+        if (currentToken.lexeme == "if") {
             Advance();
             auto condition = ParseExpression();
             auto ifBlock = ParseStatement();
 
             std::unique_ptr<ASTNode> elseBlock = nullptr;
-            if (m_CurrentToken.type == TokenType::IDENTIFIER &&
-                m_CurrentToken.lexeme == "else") {
+            if (currentToken.type == TokenType::IDENTIFIER &&
+                currentToken.lexeme == "else") {
                 Advance();
                 elseBlock = ParseStatement();
             }
 
             return std::make_unique<IfNode>(
-                std::move(condition), std::move(ifBlock), m_CurrentToken.line,
+                std::move(condition), std::move(ifBlock), currentToken.line,
                 std::move(elseBlock));
         }
     }
@@ -59,8 +59,8 @@ std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
     if (!left) return nullptr;
 
     while (true) {
-        TokenType op = m_CurrentToken.type;
-        int opLine = m_CurrentToken.line;
+        TokenType op = currentToken.type;
+        int opLine = currentToken.line;
         int precedence = GetPrecedence(op);
         if (precedence < minPrecedence) break;
 
@@ -76,57 +76,57 @@ std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
 }
 
 std::unique_ptr<ASTNode> Parser::ParsePrimary() {
-    if (m_CurrentToken.type == TokenType::NUMBER) {
-        int line = m_CurrentToken.line;
-        double val = std::stod(m_CurrentToken.lexeme);
+    if (currentToken.type == TokenType::NUMBER) {
+        int line = currentToken.line;
+        double val = std::stod(currentToken.lexeme);
         Advance();
         return std::make_unique<NumberNode>(val, line);
     }
 
-    if (m_CurrentToken.type == TokenType::LPAREN) {
+    if (currentToken.type == TokenType::LPAREN) {
         Expect(TokenType::LPAREN);
         auto expr = ParseExpression();
         Expect(TokenType::RPAREN);
         return expr;
     }
 
-    if (m_CurrentToken.type == TokenType::STRING) {
-        int line = m_CurrentToken.line;
+    if (currentToken.type == TokenType::STRING) {
+        int line = currentToken.line;
 
-        std::string strValue = m_CurrentToken.lexeme;
+        std::string strValue = currentToken.lexeme;
         Advance();
         return std::make_unique<StringNode>(strValue, line);
     }
 
-    if (m_CurrentToken.type == TokenType::IDENTIFIER) {
-        if (m_CurrentToken.lexeme == "func") return ParseFunction();
+    if (currentToken.type == TokenType::IDENTIFIER) {
+        if (currentToken.lexeme == "func") return ParseFunction();
 
-        int line = m_CurrentToken.line;
+        int line = currentToken.line;
 
-        std::string identValue = m_CurrentToken.lexeme;
+        std::string identValue = currentToken.lexeme;
         Advance();
 
-        if (m_CurrentToken.type == TokenType::LPAREN)
+        if (currentToken.type == TokenType::LPAREN)
             return ParseCall(identValue, line);
 
         return std::make_unique<VariableNode>(identValue, line);
     }
 
-    if (m_CurrentToken.type == TokenType::ENDOFFILE) return nullptr;
+    if (currentToken.type == TokenType::ENDOFFILE) return nullptr;
 
     throw Error(Error::Type::SYNTAX_ERROR,
                 std::format("Unexpected factor {}",
-                            Util::TokenTypeToString(m_CurrentToken.type)),
-                m_CurrentToken.line);
+                            Util::TokenTypeToString(currentToken.type)),
+                currentToken.line);
 }
 
 void Parser::Expect(TokenType type) {
-    if (m_CurrentToken.type != type) {
+    if (currentToken.type != type) {
         throw Error(Error::Type::SYNTAX_ERROR,
                     std::format("Unexpected token {}, expected {}",
-                                Util::TokenTypeToString(m_CurrentToken.type),
+                                Util::TokenTypeToString(currentToken.type),
                                 Util::TokenTypeToString(type)),
-                    m_CurrentToken.line);
+                    currentToken.line);
     }
     Advance();
 }
@@ -136,20 +136,20 @@ std::unique_ptr<ASTNode> Parser::ParseCall(const std::string& functionName,
     Expect(TokenType::LPAREN);
 
     std::vector<std::unique_ptr<ASTNode>> arguments;
-    while (m_CurrentToken.type != TokenType::RPAREN) {
+    while (currentToken.type != TokenType::RPAREN) {
         auto arg = ParseExpression();
         if (!arg) {
             throw Error(Error::Type::SYNTAX_ERROR,
                         "Expected expression in function call",
-                        m_CurrentToken.line);
+                        currentToken.line);
         }
         arguments.push_back(std::move(arg));
 
-        if (m_CurrentToken.type == TokenType::COMMA) {
+        if (currentToken.type == TokenType::COMMA) {
             Advance();
-        } else if (m_CurrentToken.type != TokenType::RPAREN) {
+        } else if (currentToken.type != TokenType::RPAREN) {
             throw Error(Error::Type::SYNTAX_ERROR, "Expected ',' or ')'",
-                        m_CurrentToken.line);
+                        currentToken.line);
         }
     }
 
@@ -159,18 +159,18 @@ std::unique_ptr<ASTNode> Parser::ParseCall(const std::string& functionName,
 
 std::unique_ptr<ASTNode> Parser::ParseLetStatement() {
     Expect(TokenType::IDENTIFIER);
-    int line = m_CurrentToken.line;
-    std::string varName = m_CurrentToken.lexeme;
+    int line = currentToken.line;
+    std::string varName = currentToken.lexeme;
     Expect(TokenType::IDENTIFIER);
 
     std::unique_ptr<ASTNode> initialVal = nullptr;
 
-    if (m_CurrentToken.type == TokenType::ASSIGN) {
+    if (currentToken.type == TokenType::ASSIGN) {
         Expect(TokenType::ASSIGN);
         initialVal = ParseExpression();
         if (!initialVal) {
             throw Error(Error::Type::SYNTAX_ERROR,
-                        "Expected expression after '='", m_CurrentToken.line);
+                        "Expected expression after '='", currentToken.line);
         }
     }
 
@@ -185,19 +185,19 @@ std::unique_ptr<ASTNode> Parser::ParseFunction() {
 
     std::vector<std::string> parameters;
 
-    if (m_CurrentToken.type != TokenType::LPAREN) {
-        functionName = m_CurrentToken.lexeme;
-        functionLine = m_CurrentToken.line;
+    if (currentToken.type != TokenType::LPAREN) {
+        functionName = currentToken.lexeme;
+        functionLine = currentToken.line;
         Expect(TokenType::IDENTIFIER);
     }
 
     Expect(TokenType::LPAREN);
 
-    while (m_CurrentToken.type != TokenType::RPAREN) {
-        parameters.push_back(m_CurrentToken.lexeme);
+    while (currentToken.type != TokenType::RPAREN) {
+        parameters.push_back(currentToken.lexeme);
         Expect(TokenType::IDENTIFIER);
 
-        if (m_CurrentToken.type != TokenType::COMMA) break;
+        if (currentToken.type != TokenType::COMMA) break;
         Expect(TokenType::COMMA);
     }
 
@@ -210,10 +210,10 @@ std::unique_ptr<ASTNode> Parser::ParseFunction() {
 }
 
 std::unique_ptr<ASTNode> Parser::ParseFunctionBody() {
-    if (m_CurrentToken.type == TokenType::RANGLEBRACKET) {
+    if (currentToken.type == TokenType::RANGLEBRACKET) {
         Advance();
         return ParseStatement();
-    } else if (m_CurrentToken.type == TokenType::LBRACE)
+    } else if (currentToken.type == TokenType::LBRACE)
         return ParseScope();
 
     throw Error(Error::Type::SYNTAX_ERROR,

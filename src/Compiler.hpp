@@ -15,28 +15,28 @@ class BytecodeVM;
 class BytecodeCompiler {
    public:
     BytecodeCompiler(std::unique_ptr<ScopeNode> ast, CompilerContext& ctx)
-        : m_AST(std::move(ast)), m_Context(ctx) {}
-    std::vector<Instruction>& GetInstructions() { return m_Code; }
+        : ast(std::move(ast)), ctx(ctx) {}
+    std::vector<Instruction>& GetInstructions() { return code; }
 
-    int GetInstructionPointer() { return static_cast<int>(m_Code.size()); }
+    int GetInstructionPointer() { return static_cast<int>(code.size()); }
 
     void AddInstruction(Opcode opcode, int line, double operand = 0) {
-        m_Code.emplace_back(GetInstructionPointer(), opcode, operand, line);
+        code.emplace_back(GetInstructionPointer(), opcode, operand, line);
     }
 
     void SetInstructionAt(int ip, Opcode opcode, int line, double operand = 0) {
-        m_Code[ip] = Instruction(ip, opcode, operand, line);
+        code[ip] = Instruction(ip, opcode, operand, line);
     }
 
     void DoCodegen() {
-        for (const auto& stmt : m_AST->statements)
-            stmt->Codegen(*this, m_Context);
+        for (const auto& stmt : ast->statements)
+            stmt->Codegen(*this, ctx);
     }
 
    private:
-    std::vector<Instruction> m_Code;
-    std::unique_ptr<ScopeNode> m_AST;
-    CompilerContext& m_Context;
+    std::vector<Instruction> code;
+    std::unique_ptr<ScopeNode> ast;
+    CompilerContext& ctx;
 };
 
 }  // namespace EigerC
