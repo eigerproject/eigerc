@@ -51,10 +51,11 @@ std::unique_ptr<ASTNode> Parser::ParseStatement() {
         }
     }
 
-    return ParseExpression();
+    return ParseExpression(0, true);
 }
 
-std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
+std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence,
+                                                 bool isAsStatement) {
     std::unique_ptr<ASTNode> left = ParsePrimary();
     if (!left) return nullptr;
 
@@ -64,12 +65,15 @@ std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
         int precedence = GetPrecedence(op);
         if (precedence < minPrecedence) break;
 
+        bool isRightAssociative = (op == TokenType::ASSIGN);
+
         Advance();
-        auto right = ParseExpression(precedence + 1);
+        auto right =
+            ParseExpression(isRightAssociative ? precedence : precedence + 1);
         if (!right) break;
 
         left = std::make_unique<BinaryOpNode>(op, opLine, std::move(left),
-                                              std::move(right));
+                                              std::move(right), isAsStatement);
     }
 
     return left;

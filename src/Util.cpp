@@ -44,6 +44,7 @@ std::string_view OpcodeToString(Opcode opcode) {
         case Opcode::LOAD_IMM: return "LOAD_IMM";
         case Opcode::LOAD_CONST: return "LOAD_CONST";
         case Opcode::STORE_VAR: return "STORE_VAR";
+        case Opcode::POP_VAR: return "POP_VAR";
         case Opcode::DECL_VAR: return "DECL_VAR";
         case Opcode::NEW_SCOPE: return "NEW_SCOPE";
         case Opcode::END_SCOPE: return "END_SCOPE";
@@ -65,6 +66,7 @@ std::string_view ErrorTypeToString(Error::Type type) {
         case Error::Type::NAME_ERROR: return "NAME_ERROR";
         case Error::Type::RUNTIME_ERROR: return "RUNTIME_ERROR";
         case Error::Type::TYPE_ERROR: return "TYPE_ERROR";
+        case Error::Type::INTERNAL_ERROR: return "INTERNAL_ERROR";
         default: return "ADD_TO_STRING_CONVERSION";
     }
 }

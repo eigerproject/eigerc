@@ -8,6 +8,14 @@
 namespace EigerC {
 
 void BytecodeVM::ExecuteBytecode() {
+    auto PeekSafe = [&](const int line) -> std::shared_ptr<EiObject> {
+        if (stack.empty()) {
+            throw Error(Error ::Type::RUNTIME_ERROR, "VM Stack underflow",
+                        line);
+        }
+        return stack.top();
+    };
+
     auto PopSafe = [&](const int line) -> std::shared_ptr<EiObject> {
         if (stack.empty()) {
             throw Error(Error ::Type::RUNTIME_ERROR, "VM Stack underflow",
@@ -47,6 +55,13 @@ void BytecodeVM::ExecuteBytecode() {
                 break;
 
             case Opcode::STORE_VAR: {
+                std::shared_ptr<EiObject> value = PeekSafe(inst.sourceCodeLine);
+                currentScope->SetVar(static_cast<int>(inst.operand), value,
+                                     inst.sourceCodeLine);
+                break;
+            }
+
+            case Opcode::POP_VAR: {
                 std::shared_ptr<EiObject> value = PopSafe(inst.sourceCodeLine);
                 currentScope->SetVar(static_cast<int>(inst.operand), value,
                                      inst.sourceCodeLine);

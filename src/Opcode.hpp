@@ -10,7 +10,8 @@ enum class Opcode {
     LOAD_IMM,    // Push immediate value onto the stack
     LOAD_CONST,  // Push constant onto the stack
 
-    STORE_VAR,  // Pop value from the stack into a variable
+    POP_VAR,    // Pop value from the stack into a variable
+    STORE_VAR,  // Store top value from the stack into a variable
 
     DECL_VAR,  // Declare a new variable in the current scope
 

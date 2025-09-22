@@ -7,7 +7,14 @@ namespace EigerC {
 
 class Error : public std::exception {
    public:
-    enum class Type { UNKNOWN, SYNTAX_ERROR, NAME_ERROR, RUNTIME_ERROR, TYPE_ERROR };
+    enum class Type {
+        UNKNOWN,
+        SYNTAX_ERROR,
+        NAME_ERROR,
+        RUNTIME_ERROR,
+        TYPE_ERROR,
+        INTERNAL_ERROR
+    };
 
     Error(Type type, const std::string& message, int line = -1)
         : type(type), message(message), line(line) {}

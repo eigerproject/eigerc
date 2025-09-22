@@ -78,8 +78,7 @@ struct FunctionNode : public ASTNode {
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "FUNCTION " << functionName << "( ";
-        for (const auto &param : parameters)
-            std::cout << param << " ";
+        for (const auto &param : parameters) std::cout << param << " ";
         std::cout << ")" << std::endl;
         if (body) body->PrettyPrint(indent + 1);
     }
@@ -145,13 +144,15 @@ struct BinaryOpNode : public ASTNode {
     TokenType op;
     std::unique_ptr<ASTNode> left;
     std::unique_ptr<ASTNode> right;
+    bool isAsStatement = false;
 
     BinaryOpNode(TokenType op, int opl, std::unique_ptr<ASTNode> left,
-                 std::unique_ptr<ASTNode> right)
+                 std::unique_ptr<ASTNode> right, bool isAsStatement)
         : ASTNode(opl),
           op(op),
           left(std::move(left)),
-          right(std::move(right)) {}
+          right(std::move(right)),
+          isAsStatement(isAsStatement) {}
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
@@ -185,8 +186,7 @@ struct CallNode : public ASTNode {
 
 class Parser {
    public:
-    Parser(Lexer &lexer)
-        : lexer(lexer), currentToken(TokenType::UNKNOWN, -1) {
+    Parser(Lexer &lexer) : lexer(lexer), currentToken(TokenType::UNKNOWN, -1) {
         Advance();
     }
 
@@ -195,9 +195,11 @@ class Parser {
    private:
     std::unique_ptr<ASTNode> ParseScope();
     std::unique_ptr<ASTNode> ParseStatement();
-    std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0);
+    std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0,
+                                             bool isAsStatement = false);
     std::unique_ptr<ASTNode> ParsePrimary();
-    std::unique_ptr<ASTNode> ParseCall(const std::string& functionName, int line);
+    std::unique_ptr<ASTNode> ParseCall(const std::string &functionName,
+                                       int line);
 
     std::unique_ptr<ASTNode> ParseLetStatement();
 

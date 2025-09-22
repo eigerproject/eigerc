@@ -1,2 +1,7 @@
-let myVar = emitln
-myVar("Hello, World!")
+let x
+let y
+
+x = y = 5
+
+emitln(x)
+emitln(y)

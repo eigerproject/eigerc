@@ -45,7 +45,7 @@ void EigerC::IfNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
 }
 
 void NumberNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
-    compiler.AddInstruction(Opcode::LOAD_IMM, line, static_cast<int>(value));
+    compiler.AddInstruction(Opcode::LOAD_IMM, line, value);
 }
 
 void VariableNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
@@ -59,7 +59,7 @@ void StringNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
 }
 
 void BinaryOpNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
-    left->Codegen(compiler, ctx);
+    if (op != TokenType::ASSIGN) left->Codegen(compiler, ctx);
     right->Codegen(compiler, ctx);
 
     switch (op) {
@@ -73,6 +73,17 @@ void BinaryOpNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
         case TokenType::DIVIDE:
             compiler.AddInstruction(Opcode::DIVIDE, line);
             break;
+        case TokenType::ASSIGN: {
+            Opcode c = Opcode::POP_VAR;
+
+            if (!isAsStatement) c = Opcode::STORE_VAR;
+
+            compiler.AddInstruction(
+                c, line,
+                ctx.GetVariableID(
+                    static_cast<VariableNode *>(left.get())->name));
+            break;
+        }
         default:
             throw Error(Error::Type::SYNTAX_ERROR, "Unknown binary operation",
                         line);
