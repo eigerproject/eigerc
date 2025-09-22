@@ -16,6 +16,7 @@ class BytecodeCompiler;
 
 struct ASTNode {
     int line;
+    bool isAsStatement = false;
 
     ASTNode(int line) : line(line) {}
 
@@ -144,15 +145,13 @@ struct BinaryOpNode : public ASTNode {
     TokenType op;
     std::unique_ptr<ASTNode> left;
     std::unique_ptr<ASTNode> right;
-    bool isAsStatement = false;
 
     BinaryOpNode(TokenType op, int opl, std::unique_ptr<ASTNode> left,
-                 std::unique_ptr<ASTNode> right, bool isAsStatement)
+                 std::unique_ptr<ASTNode> right)
         : ASTNode(opl),
           op(op),
           left(std::move(left)),
-          right(std::move(right)),
-          isAsStatement(isAsStatement) {}
+          right(std::move(right)) {}
 
     void PrettyPrint(int indent = 0) override {
         std::string indentStr(indent, '\t');
@@ -195,8 +194,7 @@ class Parser {
    private:
     std::unique_ptr<ASTNode> ParseScope();
     std::unique_ptr<ASTNode> ParseStatement();
-    std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0,
-                                             bool isAsStatement = false);
+    std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0);
     std::unique_ptr<ASTNode> ParsePrimary();
     std::unique_ptr<ASTNode> ParseCall(const std::string &functionName,
                                        int line);

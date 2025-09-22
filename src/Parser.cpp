@@ -29,7 +29,13 @@ std::unique_ptr<ASTNode> Parser::ParseScope() {
 }
 
 std::unique_ptr<ASTNode> Parser::ParseStatement() {
-    if (currentToken.type == TokenType::LBRACE) return ParseScope();
+    std::unique_ptr<ASTNode> resultNode;
+
+    if (currentToken.type == TokenType::LBRACE) {
+        resultNode = ParseScope();
+        resultNode->isAsStatement = true;
+        return resultNode;
+    }
 
     if (currentToken.type == TokenType::IDENTIFIER) {
         if (currentToken.lexeme == "let") return ParseLetStatement();
@@ -45,17 +51,20 @@ std::unique_ptr<ASTNode> Parser::ParseStatement() {
                 elseBlock = ParseStatement();
             }
 
-            return std::make_unique<IfNode>(
+            resultNode = std::make_unique<IfNode>(
                 std::move(condition), std::move(ifBlock), currentToken.line,
                 std::move(elseBlock));
+            resultNode->isAsStatement = true;
+            return resultNode;
         }
     }
 
-    return ParseExpression(0, true);
+    resultNode = ParseExpression();
+    resultNode->isAsStatement = true;
+    return resultNode;
 }
 
-std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence,
-                                                 bool isAsStatement) {
+std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
     std::unique_ptr<ASTNode> left = ParsePrimary();
     if (!left) return nullptr;
 
@@ -73,9 +82,8 @@ std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence,
         if (!right) break;
 
         left = std::make_unique<BinaryOpNode>(op, opLine, std::move(left),
-                                              std::move(right), isAsStatement);
+                                              std::move(right));
     }
-
     return left;
 }
 
