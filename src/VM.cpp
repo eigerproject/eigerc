@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "FunctionObject.hpp"
 #include "NumberObject.hpp"
 
 namespace EigerC {
@@ -82,19 +83,32 @@ void BytecodeVM::ExecuteBytecode() {
                 currentScope = currentScope->parent;
                 break;
 
-            case Opcode::CALL:
-                if (inst.operand ==
-                    static_cast<int>(BuiltInFunctions::EMITLN)) {
-                    std::shared_ptr<EiObject> val =
-                        PopSafe(inst.sourceCodeLine);
-                    std::cout << val->AsString() << std::endl;
-                } else {
-                    throw Error(Error ::Type::NAME_ERROR,
-                                "No such built-in function",
-                                inst.sourceCodeLine);
-                }
-                break;
+            case Opcode::CALL: {
+                int fnId = static_cast<int>(inst.operand);
+                std::shared_ptr<EiObject> fnObj =
+                    currentScope->GetVar(fnId, inst.sourceCodeLine);
 
+                if (fnObj->type != DType::FUNCTION) {
+                    throw Error(
+                        Error ::Type::TYPE_ERROR,
+                        std::format("{} is not callable", ctx.GetVarName(fnId)),
+                        inst.sourceCodeLine);
+                }
+
+                std::shared_ptr<FunctionObject> fn =
+                    std::dynamic_pointer_cast<FunctionObject>(fnObj);
+
+                // get args from stack
+                int argCount = fn->argNames.size();
+                std::vector<std::shared_ptr<EiObject>> args(argCount);
+
+                for (int i = argCount - 1; i >= 0; --i)
+                    args[i] = PopSafe(inst.sourceCodeLine);
+
+                fn->Execute(args, currentScope);
+
+                break;
+            }
             case Opcode::ADD:
                 BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
                                   const std::shared_ptr<EiObject>& b) {

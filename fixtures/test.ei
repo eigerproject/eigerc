@@ -1,6 +1,2 @@
-func SomeFunction(a, b, c) {
-    ~ something
-}
-
-emitln(SomeFunction)
-emitln(func(a, b, c) > a + b + c)
+let myVar = emitln
+myVar("Hello, World!")

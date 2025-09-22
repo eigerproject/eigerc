@@ -3,6 +3,7 @@
 
 #include "Compiler.hpp"
 #include "Error.hpp"
+#include "FunctionObject.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Util.hpp"
@@ -21,6 +22,16 @@ int main() {
         EigerC::Parser parser(lex);
 
         EigerC::CompilerContext ctx;
+        std::shared_ptr<EigerC::Scope> globalScope =
+            std::make_shared<EigerC::Scope>(ctx);
+
+        // Builtin Func Declarations
+        // TODO: move this
+        int emitlnID = ctx.GetVariableID("emitln");
+        auto emitlnConst = ctx.AddConstant(std::make_shared<EigerC::Emitln>());
+        globalScope->DeclareVar(emitlnID);
+        globalScope->SetVar(emitlnID, ctx.constantsTable[0], 0);
+        //
 
         std::unique_ptr<EigerC::ScopeNode> root = parser.Parse();
 
@@ -36,7 +47,7 @@ int main() {
 
         std::cout << "====      VM Result     ====" << std::endl;
 
-        EigerC::BytecodeVM vm(compiler, ctx);
+        EigerC::BytecodeVM vm(compiler.GetInstructions(), ctx, globalScope);
 
         vm.ExecuteBytecode();
 

@@ -1,6 +1,10 @@
 #include "Context.hpp"
 
+#include "FunctionObject.hpp"
+
 namespace EigerC {
+
+CompilerContext::CompilerContext() {}
 
 int CompilerContext::GetVariableID(const std::string& varName) {
     if (symbolTable.contains(varName)) return symbolTable[varName];

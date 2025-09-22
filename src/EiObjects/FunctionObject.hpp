@@ -29,6 +29,27 @@ class FunctionObject : public EiObject {
     std::vector<std::string> argNames;
 };
 
+class BuiltinFunctionObject : public FunctionObject {
+   public:
+    BuiltinFunctionObject(std::string name, std::vector<std::string> argNames)
+        : FunctionObject(name, argNames) {
+        type = DType::FUNCTION;
+    }
+
+    std::string AsString() const override {
+        return std::format("<built-in function {}>", name);
+    }
+};
+
+class Emitln : public BuiltinFunctionObject {
+   public:
+    Emitln() : BuiltinFunctionObject("emitln", {"value"}) {}
+    void Execute(const std::vector<std::shared_ptr<EiObject>>& values,
+                 std::shared_ptr<Scope> scope) override {
+        std::cout << values[0]->AsString() << std::endl;
+    }
+};
+
 class BytecodeFunctionObject : public FunctionObject {
    public:
     BytecodeFunctionObject(int line, CompilerContext& ctx, std::string name,
