@@ -20,17 +20,18 @@ class BytecodeCompiler {
 
     int GetInstructionPointer() { return static_cast<int>(code.size()); }
 
-    void AddInstruction(Opcode opcode, int line, double operand = 0) {
-        code.emplace_back(GetInstructionPointer(), opcode, operand, line);
+    void AddInstruction(Opcode opcode, int line, double operand = 0,
+                        bool flag = false) {
+        code.emplace_back(GetInstructionPointer(), opcode, operand, flag, line);
     }
 
-    void SetInstructionAt(int ip, Opcode opcode, int line, double operand = 0) {
-        code[ip] = Instruction(ip, opcode, operand, line);
+    void SetInstructionAt(int ip, Opcode opcode, int line, double operand = 0,
+                          bool flag = false) {
+        code[ip] = Instruction(ip, opcode, operand, flag, line);
     }
 
     void DoCodegen() {
-        for (const auto& stmt : ast->statements)
-            stmt->Codegen(*this, ctx);
+        for (const auto& stmt : ast->statements) stmt->Codegen(*this, ctx);
     }
 
    private:

@@ -22,8 +22,9 @@ class FunctionObject : public EiObject {
 
     virtual ~FunctionObject() = default;
 
-    virtual void Execute(const std::vector<std::shared_ptr<EiObject>>& values,
-                         std::shared_ptr<Scope> scope) = 0;
+    virtual std::shared_ptr<EiObject> Execute(
+        const std::vector<std::shared_ptr<EiObject>>& values,
+        std::shared_ptr<Scope> scope) = 0;
 
     std::string name;
     std::vector<std::string> argNames;
@@ -44,9 +45,11 @@ class BuiltinFunctionObject : public FunctionObject {
 class Emitln : public BuiltinFunctionObject {
    public:
     Emitln() : BuiltinFunctionObject("emitln", {"value"}) {}
-    void Execute(const std::vector<std::shared_ptr<EiObject>>& values,
-                 std::shared_ptr<Scope> scope) override {
+    std::shared_ptr<EiObject> Execute(
+        const std::vector<std::shared_ptr<EiObject>>& values,
+        std::shared_ptr<Scope> scope) override {
         std::cout << values[0]->AsString() << std::endl;
+        return std::make_shared<NixObject>();
     }
 };
 
@@ -59,8 +62,9 @@ class BytecodeFunctionObject : public FunctionObject {
         this->line = line;
     }
 
-    void Execute(const std::vector<std::shared_ptr<EiObject>>& values,
-                 std::shared_ptr<Scope> scope) override {
+    std::shared_ptr<EiObject> Execute(
+        const std::vector<std::shared_ptr<EiObject>>& values,
+        std::shared_ptr<Scope> scope) override {
         auto fScope = std::make_shared<Scope>(ctx, scope);
         BytecodeVM vm(code, ctx, fScope);
 
@@ -71,6 +75,7 @@ class BytecodeFunctionObject : public FunctionObject {
         }
 
         vm.ExecuteBytecode();
+        return std::make_shared<NixObject>();
     }
 
     std::string AsString() const override {

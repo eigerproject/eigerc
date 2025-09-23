@@ -1,7 +1,5 @@
 #include "VM.hpp"
 
-#include <iostream>
-
 #include "FunctionObject.hpp"
 #include "NumberObject.hpp"
 
@@ -120,7 +118,9 @@ void BytecodeVM::ExecuteBytecode() {
                 for (int i = argCount - 1; i >= 0; --i)
                     args[i] = PopSafe(inst.sourceCodeLine);
 
-                fn->Execute(args, currentScope);
+                auto retVal = fn->Execute(args, currentScope);
+
+                if (inst.flag) stack.push(retVal);
 
                 break;
             }

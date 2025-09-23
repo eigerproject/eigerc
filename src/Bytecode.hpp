@@ -12,16 +12,21 @@ namespace EigerC {
 struct Instruction {
     Opcode opcode;
     double operand;
+    bool flag = false;
     int sourceCodeLine;
     int address;
 
-    Instruction(int addr, Opcode op, double opnd, int srcln)
-        : address(addr), opcode(op), operand(opnd), sourceCodeLine(srcln) {}
+    Instruction(int addr, Opcode op, double opnd, bool flag, int srcln)
+        : address(addr),
+          opcode(op),
+          operand(opnd),
+          sourceCodeLine(srcln),
+          flag(flag) {}
 
     void PrettyPrint() const {
         std::cout << std::setfill('0') << std::setw(5) << address << '\t';
-        std::cout << Util::OpcodeToString(opcode) << '\t' << operand
-                  << std::endl;
+        std::cout << Util::OpcodeToString(opcode) << '\t' << operand << '\t'
+                  << flag << std::endl;
     }
 };
 

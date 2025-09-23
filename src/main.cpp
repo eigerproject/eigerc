@@ -77,7 +77,7 @@ void RunShell() {
     while (true) {
         std::string sourceCode;
         std::getline(std::cin, sourceCode);
-        RunSource(sourceCode, ctx, globalScope);
+        RunSource(sourceCode, ctx, globalScope, true);
     }
 }
 
