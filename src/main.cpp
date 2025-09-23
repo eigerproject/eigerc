@@ -145,7 +145,7 @@ CmdOptions ParseFlags(int argc, char* argv[]) {
     return opts;
 }
 
-const std::string_view version = "v0.1.0";
+const std::string_view version = "v0.1.1";
 
 static void PrintInfo() {
     std::string compile_date = __DATE__;
@@ -204,5 +204,5 @@ static int Start(int argc, char* argv[]) {
 }  // namespace EigerC
 
 int main(int argc, char* argv[]) {
-    EigerC::Start(argc, argv);
+    return EigerC::Start(argc, argv);
 }
