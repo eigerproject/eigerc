@@ -9,6 +9,7 @@ class Error : public std::exception {
    public:
     enum class Type {
         UNKNOWN,
+        ARG_ERROR,
         SYNTAX_ERROR,
         NAME_ERROR,
         RUNTIME_ERROR,
