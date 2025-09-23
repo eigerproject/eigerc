@@ -9,16 +9,9 @@
 #include "Util.hpp"
 #include "VM.hpp"
 
-int main() {
-    std::string sourceCode;
-
-    std::ifstream fStream("fixtures/test.ei");
-
-    std::string t;
-    while (std::getline(fStream, t)) sourceCode += t += '\n';
-
+int RunSource(const std::string& src) {
     try {
-        EigerC::Lexer lex(sourceCode);
+        EigerC::Lexer lex(src);
         EigerC::Parser parser(lex);
 
         EigerC::CompilerContext ctx;
@@ -51,10 +44,28 @@ int main() {
 
         vm.ExecuteBytecode();
 
+        return 0;
     } catch (EigerC::Error& e) {
         std::cerr << EigerC::Util::ErrorTypeToString(e.GetType()) << ": "
                   << e.GetMessage() << " at line " << e.GetLine() << std::endl;
         return 1;
+    }
+}
+
+int RunFile(const std::string& filepath) {
+    std::string sourceCode;
+    std::ifstream fStream(filepath);
+
+    std::string l;
+    while (std::getline(fStream, l)) sourceCode += l += '\n';
+
+    return RunSource(sourceCode);
+}
+
+int main() {
+    try {
+        int t = RunFile("fixtures/test.ei");
+        if (t) return t;
     } catch (const std::exception& e) {
         std::cerr << "Unexpected error: " << e.what() << std::endl;
         return 1;
