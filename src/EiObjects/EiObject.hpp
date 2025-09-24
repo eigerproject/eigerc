@@ -5,12 +5,11 @@
 #include <memory>
 #include <string>
 
+#include "DType.hpp"
 #include "Error.hpp"
 #include "Util.hpp"
 
 namespace EigerC {
-
-enum class DType { UNKNOWN, NUMBER, STRING, NIX, FUNCTION };
 
 class EiObject {
    public:
@@ -58,6 +57,42 @@ class EiObject {
     virtual std::shared_ptr<EiObject> operator/(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `+` to object types {} and {}",
+                                Util::ObjectDTypeToString(type),
+                                Util::ObjectDTypeToString(other.type)),
+                    line);
+    };
+
+    virtual std::shared_ptr<EiObject> operator==(const EiObject &other) const;
+
+    virtual std::shared_ptr<EiObject> operator!=(const EiObject &other) const;
+
+    virtual std::shared_ptr<EiObject> operator<(const EiObject &other) const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Operator `<` to object types {} and {}",
+                                Util::ObjectDTypeToString(type),
+                                Util::ObjectDTypeToString(other.type)),
+                    line);
+    };
+
+    virtual std::shared_ptr<EiObject> operator>(const EiObject &other) const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Operator `>` to object types {} and {}",
+                                Util::ObjectDTypeToString(type),
+                                Util::ObjectDTypeToString(other.type)),
+                    line);
+    };
+
+    virtual std::shared_ptr<EiObject> operator<=(const EiObject &other) const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Operator `<=` to object types {} and {}",
+                                Util::ObjectDTypeToString(type),
+                                Util::ObjectDTypeToString(other.type)),
+                    line);
+    };
+
+    virtual std::shared_ptr<EiObject> operator>=(const EiObject &other) const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Operator `>=` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
                                 Util::ObjectDTypeToString(other.type)),
                     line);

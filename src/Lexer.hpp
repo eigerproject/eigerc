@@ -19,10 +19,14 @@ enum class TokenType {
     RPAREN,
     COMMA,
     ASSIGN,
+    EQ,
+    NEQ,
+    GT,
+    LT,
+    GTE,
+    LTE,
     LBRACE,
-    RBRACE,
-    LANGLEBRACKET,
-    RANGLEBRACKET,
+    RBRACE
 };
 
 struct Token {

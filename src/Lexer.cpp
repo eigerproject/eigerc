@@ -113,11 +113,48 @@ Token Lexer::GetNextToken() {
             case '(': Advance(); return {TokenType::LPAREN, line};
             case ')': Advance(); return {TokenType::RPAREN, line};
             case ',': Advance(); return {TokenType::COMMA, line};
-            case '=': Advance(); return {TokenType::ASSIGN, line};
+            case '=': {
+                Advance();
+                return {TokenType::ASSIGN, line};
+            }
+            case '!': {
+                Advance();
+                if (currentChar != '=') {
+                    throw Error(Error::Type::SYNTAX_ERROR,
+                                std::format("Unexpected character: `{}`", '!'),
+                                line);
+                }
+                Advance();
+                return {TokenType::NEQ, line};
+            }
+            case '?': {
+                Advance();
+                if (currentChar != '=') {
+                    throw Error(Error::Type::SYNTAX_ERROR,
+                                std::format("Unexpected character: `{}`", '?'),
+                                line);
+                }
+                Advance();
+                return {TokenType::EQ, line};
+            }
             case '{': Advance(); return {TokenType::LBRACE, line};
             case '}': Advance(); return {TokenType::RBRACE, line};
-            case '<': Advance(); return {TokenType::LANGLEBRACKET, line};
-            case '>': Advance(); return {TokenType::RANGLEBRACKET, line};
+            case '<': {
+                Advance();
+                if (currentChar == '=') {
+                    Advance();
+                    return {TokenType::LTE, line};
+                }
+                return {TokenType::LT, line};
+            }
+            case '>': {
+                Advance();
+                if (currentChar == '=') {
+                    Advance();
+                    return {TokenType::GTE, line};
+                }
+                return {TokenType::GT, line};
+            }
             case '"': return String();
             default:
                 throw Error(

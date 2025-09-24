@@ -40,6 +40,18 @@ class NumberObject : public EiObject {
         return result;
     }
 
+    virtual std::shared_ptr<EiObject> operator==(const EiObject &other) const;
+
+    virtual std::shared_ptr<EiObject> operator!=(const EiObject &other) const;
+
+    virtual std::shared_ptr<EiObject> operator<(const EiObject &other) const;
+
+    virtual std::shared_ptr<EiObject> operator>(const EiObject &other) const;
+
+    virtual std::shared_ptr<EiObject> operator<=(const EiObject &other) const;
+
+    virtual std::shared_ptr<EiObject> operator>=(const EiObject &other) const;
+
     operator bool() const override { return value != 0.0; };
 
     double value = 0;

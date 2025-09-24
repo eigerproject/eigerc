@@ -30,6 +30,10 @@ class StringObject : public EiObject {
         return result;
     }
 
+    virtual std::shared_ptr<EiObject> operator==(const EiObject &other) const;
+
+    virtual std::shared_ptr<EiObject> operator!=(const EiObject &other) const;
+
     std::string value;
 };
 

@@ -20,10 +20,19 @@ enum class Opcode {
 
     CALL,  // Call a function
 
-    ADD,       // Add top two values on the stack
-    SUBTRACT,  // Subtract top two values on the stack
-    MULTIPLY,  // Multiply top two values on the stack
-    DIVIDE,    // Divide top two values on the stack
+    // Arithmetic between top two values on the stack
+    ADD,
+    SUBTRACT,
+    MULTIPLY,
+    DIVIDE,
+
+    // Comparisons between top two values on the stack
+    EQUAL,
+    NEQUAL,
+    GREATER,
+    LESS,
+    GREATEREQ,
+    LESSEQ,
 
     JUMP_IF_FALSE,  // Jump if top of stack is falsy value
     JUMP,           // Unconditional jump

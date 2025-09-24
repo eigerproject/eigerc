@@ -222,7 +222,7 @@ std::unique_ptr<ASTNode> Parser::ParseFunction() {
 }
 
 std::unique_ptr<ASTNode> Parser::ParseFunctionBody() {
-    if (currentToken.type == TokenType::RANGLEBRACKET) {
+    if (currentToken.type == TokenType::GT) {
         Advance();
         return ParseStatement();
     } else if (currentToken.type == TokenType::LBRACE)
@@ -234,11 +234,24 @@ std::unique_ptr<ASTNode> Parser::ParseFunctionBody() {
 
 int Parser::GetPrecedence(TokenType type) {
     switch (type) {
-        case TokenType::PLUS:
-        case TokenType::MINUS: return 1;
-        case TokenType::MULTIPLY:
-        case TokenType::DIVIDE: return 2;
         case TokenType::ASSIGN: return 0;
+
+        case TokenType::EQ:   // ==
+        case TokenType::NEQ:  // !=
+            return 1;
+
+        case TokenType::LT:   // <
+        case TokenType::LTE:  // <=
+        case TokenType::GT:   // >
+        case TokenType::GTE:  // >=
+            return 2;
+
+        case TokenType::PLUS:
+        case TokenType::MINUS: return 3;
+
+        case TokenType::MULTIPLY:
+        case TokenType::DIVIDE: return 4;
+
         default: return -1;
     }
 }

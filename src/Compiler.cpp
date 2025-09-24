@@ -73,6 +73,20 @@ void BinaryOpNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
         case TokenType::DIVIDE:
             compiler.AddInstruction(Opcode::DIVIDE, line);
             break;
+        case TokenType::EQ: compiler.AddInstruction(Opcode::EQUAL, line); break;
+        case TokenType::NEQ:
+            compiler.AddInstruction(Opcode::NEQUAL, line);
+            break;
+        case TokenType::GT:
+            compiler.AddInstruction(Opcode::GREATER, line);
+            break;
+        case TokenType::GTE:
+            compiler.AddInstruction(Opcode::GREATEREQ, line);
+            break;
+        case TokenType::LT: compiler.AddInstruction(Opcode::LESS, line); break;
+        case TokenType::LTE:
+            compiler.AddInstruction(Opcode::LESSEQ, line);
+            break;
         case TokenType::ASSIGN: {
             Opcode c = Opcode::POP_VAR;
 

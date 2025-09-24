@@ -152,6 +152,48 @@ void BytecodeVM::ExecuteBytecode() {
                 });
                 break;
 
+            case Opcode::EQUAL:
+                BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
+                                  const std::shared_ptr<EiObject>& b) {
+                    return *a == *b;
+                });
+                break;
+
+            case Opcode::NEQUAL:
+                BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
+                                  const std::shared_ptr<EiObject>& b) {
+                    return *a != *b;
+                });
+                break;
+
+            case Opcode::GREATER:
+                BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
+                                  const std::shared_ptr<EiObject>& b) {
+                    return *a > *b;
+                });
+                break;
+
+            case Opcode::GREATEREQ:
+                BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
+                                  const std::shared_ptr<EiObject>& b) {
+                    return *a >= *b;
+                });
+                break;
+
+            case Opcode::LESS:
+                BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
+                                  const std::shared_ptr<EiObject>& b) {
+                    return *a < *b;
+                });
+                break;
+
+            case Opcode::LESSEQ:
+                BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
+                                  const std::shared_ptr<EiObject>& b) {
+                    return *a <= *b;
+                });
+                break;
+
             default:
                 throw Error(Error ::Type::RUNTIME_ERROR, "Unknown Opcode",
                             inst.sourceCodeLine);
