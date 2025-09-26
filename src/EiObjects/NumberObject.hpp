@@ -1,6 +1,9 @@
 #ifndef _EIGERC_NUMBEROBJECT_HPP_
 #define _EIGERC_NUMBEROBJECT_HPP_
 
+#include <iomanip>
+#include <sstream>
+
 #include "EiObject.hpp"
 
 namespace EigerC {
@@ -14,7 +17,11 @@ class NumberObject : public EiObject {
     }
 
     double AsNumber() const override { return value; }
-    std::string AsString() const override { return std::to_string(value); }
+    std::string AsString() const override {
+        std::ostringstream oss;
+        oss << std::setprecision(15) << std::noshowpoint << value;
+        return oss.str();
+    }
 
     std::shared_ptr<EiObject> operator+(const EiObject &other) const override {
         auto result = std::make_shared<NumberObject>(line);
