@@ -38,25 +38,12 @@ std::unique_ptr<ASTNode> Parser::ParseStatement() {
     }
 
     if (currentToken.type == TokenType::IDENTIFIER) {
-        if (currentToken.lexeme == "let") return ParseLetStatement();
-        if (currentToken.lexeme == "if") {
-            Advance();
-            auto condition = ParseExpression();
-            auto ifBlock = ParseStatement();
-
-            std::unique_ptr<ASTNode> elseBlock = nullptr;
-            if (currentToken.type == TokenType::IDENTIFIER &&
-                currentToken.lexeme == "else") {
-                Advance();
-                elseBlock = ParseStatement();
-            }
-
-            resultNode = std::make_unique<IfNode>(
-                std::move(condition), std::move(ifBlock), currentToken.line,
-                std::move(elseBlock));
-            resultNode->isAsStatement = true;
-            return resultNode;
-        }
+        if (currentToken.lexeme == "let")
+            return ParseLetStatement();
+        else if (currentToken.lexeme == "if")
+            return ParseIfStatement();
+        else if (currentToken.lexeme == "ret")
+            return ParseRetStatement();
     }
 
     resultNode = ParseExpression();
@@ -169,6 +156,35 @@ std::unique_ptr<ASTNode> Parser::ParseCall(const std::string& functionName,
     return std::make_unique<CallNode>(functionName, std::move(arguments), line);
 }
 
+std::unique_ptr<ASTNode> Parser::ParseRetStatement() {
+    int line = currentToken.line;
+    Advance();
+    auto value = ParseExpression();
+
+    auto result = std::make_unique<RetNode>(std::move(value), line);
+    result->isAsStatement = true;
+    return result;
+}
+
+std::unique_ptr<ASTNode> Parser::ParseIfStatement() {
+    Advance();
+    auto condition = ParseExpression();
+    auto ifBlock = ParseStatement();
+
+    std::unique_ptr<ASTNode> elseBlock = nullptr;
+    if (currentToken.type == TokenType::IDENTIFIER &&
+        currentToken.lexeme == "else") {
+        Advance();
+        elseBlock = ParseStatement();
+    }
+
+    auto result =
+        std::make_unique<IfNode>(std::move(condition), std::move(ifBlock),
+                                 currentToken.line, std::move(elseBlock));
+    result->isAsStatement = true;
+    return result;
+}
+
 std::unique_ptr<ASTNode> Parser::ParseLetStatement() {
     Expect(TokenType::IDENTIFIER);
     int line = currentToken.line;
@@ -186,7 +202,11 @@ std::unique_ptr<ASTNode> Parser::ParseLetStatement() {
         }
     }
 
-    return std::make_unique<LetNode>(varName, std::move(initialVal), line);
+    auto result =
+        std::make_unique<LetNode>(varName, std::move(initialVal), line);
+    result->isAsStatement = true;
+
+    return result;
 }
 
 std::unique_ptr<ASTNode> Parser::ParseFunction() {
@@ -215,16 +235,17 @@ std::unique_ptr<ASTNode> Parser::ParseFunction() {
 
     Expect(TokenType::RPAREN);
 
+    bool isExpression = currentToken.type == TokenType::GT;
     std::unique_ptr<ASTNode> body = ParseFunctionBody();
 
-    return std::make_unique<FunctionNode>(functionName, parameters,
-                                          std::move(body), functionLine);
+    return std::make_unique<FunctionNode>(
+        functionName, parameters, std::move(body), isExpression, functionLine);
 }
 
 std::unique_ptr<ASTNode> Parser::ParseFunctionBody() {
     if (currentToken.type == TokenType::GT) {
         Advance();
-        return ParseStatement();
+        return ParseExpression();
     } else if (currentToken.type == TokenType::LBRACE)
         return ParseScope();
 

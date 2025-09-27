@@ -5,15 +5,7 @@
 
 namespace EigerC {
 
-void BytecodeVM::ExecuteBytecode() {
-    auto PeekSafe = [&](const int line) -> std::shared_ptr<EiObject> {
-        if (stack.empty()) {
-            throw Error(Error ::Type::RUNTIME_ERROR, "VM Stack underflow",
-                        line);
-        }
-        return stack.top();
-    };
-
+std::shared_ptr<EiObject> BytecodeVM::ExecuteBytecode() {
     auto PopSafe = [&](const int line) -> std::shared_ptr<EiObject> {
         if (stack.empty()) {
             throw Error(Error ::Type::RUNTIME_ERROR, "VM Stack underflow",
@@ -53,7 +45,7 @@ void BytecodeVM::ExecuteBytecode() {
                 break;
 
             case Opcode::STORE_VAR: {
-                std::shared_ptr<EiObject> value = PeekSafe(inst.sourceCodeLine);
+                std::shared_ptr<EiObject> value = Peek(inst.sourceCodeLine);
                 currentScope->SetVar(static_cast<int>(inst.operand), value,
                                      inst.sourceCodeLine);
                 break;
@@ -124,6 +116,9 @@ void BytecodeVM::ExecuteBytecode() {
 
                 break;
             }
+
+            case Opcode::RETURN: return PopSafe(inst.sourceCodeLine);
+
             case Opcode::ADD:
                 BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
                                   const std::shared_ptr<EiObject>& b) {
@@ -199,6 +194,15 @@ void BytecodeVM::ExecuteBytecode() {
                             inst.sourceCodeLine);
         }
     }
+
+    return std::make_shared<NixObject>();
+}
+
+std::shared_ptr<EiObject> BytecodeVM::Peek(int line) {
+    if (stack.empty()) {
+        throw Error(Error ::Type::RUNTIME_ERROR, "VM Stack underflow", line);
+    }
+    return stack.top();
 }
 
 }  // namespace EigerC

@@ -68,11 +68,13 @@ struct FunctionNode : public ASTNode {
     std::string functionName;
     std::vector<std::string> parameters;
     std::unique_ptr<ASTNode> body;
+    bool isExpression = false;
 
     FunctionNode(std::string functionName, std::vector<std::string> parameters,
-                 std::unique_ptr<ASTNode> body, int line)
+                 std::unique_ptr<ASTNode> body, bool isExpression, int line)
         : functionName(std::move(functionName)),
           parameters(std::move(parameters)),
+          isExpression(isExpression),
           body(std::move(body)),
           ASTNode(line) {}
 
@@ -164,6 +166,21 @@ struct BinaryOpNode : public ASTNode {
     void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
+struct RetNode : public ASTNode {
+    std::unique_ptr<ASTNode> value;
+
+    RetNode(std::unique_ptr<ASTNode> value, int line)
+        : value(std::move(value)), ASTNode(line) {}
+
+    void PrettyPrint(int indent = 0) override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << "RETURN" << std::endl;
+        value->PrettyPrint(indent + 1);
+    }
+
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
+};
+
 struct CallNode : public ASTNode {
     std::string functionName;
     std::vector<std::unique_ptr<ASTNode>> arguments;
@@ -200,6 +217,8 @@ class Parser {
                                        int line);
 
     std::unique_ptr<ASTNode> ParseLetStatement();
+    std::unique_ptr<ASTNode> ParseIfStatement();
+    std::unique_ptr<ASTNode> ParseRetStatement();
 
     std::unique_ptr<ASTNode> ParseFunction();
 

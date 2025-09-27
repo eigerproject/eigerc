@@ -31,7 +31,8 @@ void SetupCompiler(CompilerContext& ctx, std::shared_ptr<Scope> globalScope) {
 }
 
 void RunSource(const std::string& src, CompilerContext& ctx,
-               std::shared_ptr<Scope> globalScope, bool verbose = false) {
+               std::shared_ptr<Scope> globalScope, bool verbose = false,
+               bool printReturn = false) {
     Lexer lex(src);
     Parser parser(lex);
 
@@ -54,6 +55,12 @@ void RunSource(const std::string& src, CompilerContext& ctx,
     BytecodeVM vm(compiler.GetInstructions(), ctx, globalScope);
 
     vm.ExecuteBytecode();
+    if (printReturn) {
+        if (vm.CanPeek())
+            std::cout << vm.Peek()->AsString() << "\n";
+        else
+            std::cout << "nix\n";
+    }
 }
 
 void PrintError(const Error& e) {
@@ -91,7 +98,7 @@ void RunShell(bool verbose = false) {
             std::string sourceCode;
             std::cout << "\n% ";
             std::getline(std::cin, sourceCode);
-            RunSource(sourceCode, ctx, globalScope, verbose);
+            RunSource(sourceCode, ctx, globalScope, verbose, true);
         } catch (const Error& e) { PrintError(e); }
     }
 }
@@ -145,7 +152,7 @@ CmdOptions ParseFlags(int argc, char* argv[]) {
     return opts;
 }
 
-const std::string_view version = "v0.2.3";
+const std::string_view version = "v0.3.0";
 
 static void PrintInfo() {
     std::string compileDate = __DATE__;

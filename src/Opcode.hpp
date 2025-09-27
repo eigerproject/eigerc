@@ -18,7 +18,8 @@ enum class Opcode {
     NEW_SCOPE,  // Create a new scope
     END_SCOPE,  // End the current scope
 
-    CALL,  // Call a function
+    CALL,    // Call a function
+    RETURN,  // Return value
 
     // Arithmetic between top two values on the stack
     ADD,

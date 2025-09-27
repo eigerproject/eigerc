@@ -18,7 +18,9 @@ class BytecodeVM {
                CompilerContext &ctx, std::shared_ptr<Scope> scope)
         : instructions(instructions), ctx(ctx), currentScope(scope) {}
 
-    void ExecuteBytecode();
+    std::shared_ptr<EiObject> ExecuteBytecode();
+    std::shared_ptr<EiObject> Peek(int line = -1);
+    bool CanPeek() { return !stack.empty(); }
 
    private:
     std::shared_ptr<Scope> currentScope;

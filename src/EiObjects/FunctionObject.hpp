@@ -57,8 +57,11 @@ class BytecodeFunctionObject : public FunctionObject {
    public:
     BytecodeFunctionObject(int line, CompilerContext& ctx, std::string name,
                            std::vector<std::string> argNames,
-                           std::vector<Instruction> code)
-        : ctx(ctx), code(code), FunctionObject(name, argNames) {
+                           std::vector<Instruction> code, bool isInline)
+        : ctx(ctx),
+          code(code),
+          isInline(isInline),
+          FunctionObject(name, argNames) {
         this->line = line;
     }
 
@@ -74,15 +77,21 @@ class BytecodeFunctionObject : public FunctionObject {
             fScope->SetVar(id, values[i], line);
         }
 
-        vm.ExecuteBytecode();
-        return std::make_shared<NixObject>();
+        auto result = vm.ExecuteBytecode();
+        if (isInline) return vm.Peek();
+        return result;
     }
 
     std::string AsString() const override {
-        return std::format("<function {}>", name);
+        std::string_view funcType = isInline ? "inline function" : "function";
+        if (name.empty())
+            return std::format("<{}>", funcType);
+        else
+            return std::format("<{} {}>", funcType, name);
     }
 
    private:
+    int isInline = false;
     std::vector<Instruction> code;
     CompilerContext& ctx;
 };

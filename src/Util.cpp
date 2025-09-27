@@ -48,7 +48,8 @@ std::string_view OpcodeToString(Opcode opcode) {
         case Opcode::DECL_VAR: return "DECL_VAR";
         case Opcode::NEW_SCOPE: return "NEW_SCOPE";
         case Opcode::END_SCOPE: return "END_SCOPE";
-        case Opcode::CALL: return "CALL_FUNC";
+        case Opcode::CALL: return "CALL";
+        case Opcode::RETURN: return "RETURN";
         case Opcode::ADD: return "ADD";
         case Opcode::SUBTRACT: return "SUBTRACT";
         case Opcode::MULTIPLY: return "MULTIPLY";
