@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Bytecode.hpp"
 #include "Context.hpp"
+#include "Instruction.hpp"
 #include "Parser.hpp"
 
 namespace EigerC {

@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "Bytecode.hpp"
 #include "EiObject.hpp"
+#include "Instruction.hpp"
 #include "Scope.hpp"
 #include "VM.hpp"
 
