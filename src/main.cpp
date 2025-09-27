@@ -145,25 +145,25 @@ CmdOptions ParseFlags(int argc, char* argv[]) {
     return opts;
 }
 
-const std::string_view version = "v0.2.2";
+const std::string_view version = "v0.2.3";
 
 static void PrintInfo() {
-    std::string compile_date = __DATE__;
-    std::string compile_time = __TIME__;
+    std::string compileDate = __DATE__;
+    std::string compileTime = __TIME__;
 
 #ifdef __GNUC__
-    std::string compiler_info = "GCC " + std::to_string(__GNUC_MAJOR__) + "." +
-                                std::to_string(__GNUC_MINOR__);
+    std::string compilerInfo = "GCC " + std::to_string(__GNUC_MAJOR__) + "." +
+                               std::to_string(__GNUC_MINOR__);
 #elif _MSC_VER
-    std::string compiler_info = "MSVC " + std::to_string(_MSC_VER);
+    std::string compilerInfo = "MSVC " + std::to_string(_MSC_VER);
 #else
-    std::string compiler_info = "Unknown Compiler";
+    std::string compilerInfo = "Unknown Compiler";
 #endif
 
     std::cout << "EigerC " << version << " ";
 
-    std::cout << "(compiled with " << compiler_info << " @ " << compile_date
-              << ", " << compile_time << ")\n\n";
+    std::cout << "(compiled with " << compilerInfo << " @ " << compileDate
+              << ", " << compileTime << ")\n\n";
 }
 
 static void PrintHelp() {
