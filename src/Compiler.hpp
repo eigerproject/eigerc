@@ -14,8 +14,8 @@ class BytecodeVM;
 
 class BytecodeCompiler {
    public:
-    BytecodeCompiler(std::unique_ptr<ScopeNode> ast, CompilerContext& ctx)
-        : ast(std::move(ast)), ctx(ctx) {}
+    BytecodeCompiler() {}
+
     std::vector<Instruction>& GetInstructions() { return code; }
 
     int GetInstructionPointer() { return static_cast<int>(code.size()); }
@@ -30,14 +30,8 @@ class BytecodeCompiler {
         code[ip] = Instruction(ip, opcode, operand, flag, line);
     }
 
-    void DoCodegen() {
-        for (const auto& stmt : ast->statements) stmt->Codegen(*this, ctx);
-    }
-
    private:
     std::vector<Instruction> code;
-    std::unique_ptr<ScopeNode> ast;
-    CompilerContext& ctx;
 };
 
 }  // namespace EigerC

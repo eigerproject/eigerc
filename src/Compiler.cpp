@@ -118,11 +118,8 @@ void EigerC::RetNode::Codegen(BytecodeCompiler &compiler,
 
 void EigerC::FunctionNode::Codegen(BytecodeCompiler &compiler,
                                    CompilerContext &ctx) {
-    std::unique_ptr<ScopeNode> root = std::make_unique<ScopeNode>(line);
-    root->statements.push_back(std::move(body));
-
-    BytecodeCompiler newCompiler(std::move(root), ctx);
-    newCompiler.DoCodegen();
+    BytecodeCompiler newCompiler;
+    body->Codegen(newCompiler, ctx);
 
     auto constv = ctx.AddConstant(std::make_shared<BytecodeFunctionObject>(
         line, ctx, functionName, parameters, newCompiler.GetInstructions(),
