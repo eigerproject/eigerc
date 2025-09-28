@@ -43,6 +43,7 @@ std::string_view OpcodeToString(Opcode opcode) {
         case Opcode::LOAD_VAR: return "LOAD_VAR";
         case Opcode::LOAD_IMM: return "LOAD_IMM";
         case Opcode::LOAD_CONST: return "LOAD_CONST";
+        case Opcode::LOAD_FUNC: return "LOAD_FUNC";
         case Opcode::STORE_VAR: return "STORE_VAR";
         case Opcode::POP_VAR: return "POP_VAR";
         case Opcode::DECL_VAR: return "DECL_VAR";

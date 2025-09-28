@@ -44,6 +44,26 @@ std::shared_ptr<EiObject> BytecodeVM::ExecuteBytecode() {
                 stack.push(ctx.constantsTable[static_cast<int>(inst.operand)]);
                 break;
 
+            case Opcode::LOAD_FUNC: {
+                const auto& constant =
+                    ctx.constantsTable[static_cast<int>(inst.operand)];
+
+                if (constant->type != DType::FUNCTION) {
+                    throw Error(Error ::Type::TYPE_ERROR,
+                                std::format("{} is not callable",
+                                            ctx.GetVarName(inst.operand)),
+                                inst.sourceCodeLine);
+                }
+
+                std::shared_ptr<BytecodeFunctionObject> fn =
+                    std::dynamic_pointer_cast<BytecodeFunctionObject>(constant);
+
+                if (fn->GetClosure() == nullptr) fn->SetClosure(currentScope);
+
+                stack.push(fn);
+                break;
+            }
+
             case Opcode::STORE_VAR: {
                 std::shared_ptr<EiObject> value = Peek(inst.sourceCodeLine);
                 currentScope->SetVar(static_cast<int>(inst.operand), value,
@@ -110,7 +130,7 @@ std::shared_ptr<EiObject> BytecodeVM::ExecuteBytecode() {
                 for (int i = argCount - 1; i >= 0; --i)
                     args[i] = PopSafe(inst.sourceCodeLine);
 
-                auto retVal = fn->Execute(args, currentScope);
+                auto retVal = fn->Execute(args);
 
                 if (inst.flag) stack.push(retVal);
 

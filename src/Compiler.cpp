@@ -125,7 +125,7 @@ void EigerC::FunctionNode::Codegen(BytecodeCompiler &compiler,
         line, ctx, functionName, parameters, newCompiler.GetInstructions(),
         isExpression));
 
-    compiler.AddInstruction(Opcode::LOAD_CONST, line, constv);
+    compiler.AddInstruction(Opcode::LOAD_FUNC, line, constv);
 
     if (!this->functionName.empty()) {
         int id = ctx.GetVariableID(functionName);

@@ -9,6 +9,7 @@ enum class Opcode {
 
     LOAD_IMM,    // Push immediate value onto the stack
     LOAD_CONST,  // Push constant onto the stack
+    LOAD_FUNC,   // Push function constant with attached closure
 
     POP_VAR,    // Pop value from the stack into a variable
     STORE_VAR,  // Store top value from the stack into a variable

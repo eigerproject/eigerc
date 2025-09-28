@@ -23,8 +23,7 @@ class FunctionObject : public EiObject {
     virtual ~FunctionObject() = default;
 
     virtual std::shared_ptr<EiObject> Execute(
-        const std::vector<std::shared_ptr<EiObject>>& values,
-        std::shared_ptr<Scope> scope) = 0;
+        const std::vector<std::shared_ptr<EiObject>>& values) = 0;
 
     std::string name;
     std::vector<std::string> argNames;
@@ -46,8 +45,7 @@ class Emitln : public BuiltinFunctionObject {
    public:
     Emitln() : BuiltinFunctionObject("emitln", {"value"}) {}
     std::shared_ptr<EiObject> Execute(
-        const std::vector<std::shared_ptr<EiObject>>& values,
-        std::shared_ptr<Scope> scope) override {
+        const std::vector<std::shared_ptr<EiObject>>& values) override {
         std::cout << values[0]->AsString() << std::endl;
         return std::make_shared<NixObject>();
     }
@@ -66,9 +64,8 @@ class BytecodeFunctionObject : public FunctionObject {
     }
 
     std::shared_ptr<EiObject> Execute(
-        const std::vector<std::shared_ptr<EiObject>>& values,
-        std::shared_ptr<Scope> scope) override {
-        auto fScope = std::make_shared<Scope>(ctx, scope);
+        const std::vector<std::shared_ptr<EiObject>>& values) override {
+        auto fScope = std::make_shared<Scope>(ctx, closure);
         BytecodeVM vm(code, ctx, fScope);
 
         for (size_t i = 0; i < argNames.size(); ++i) {
@@ -90,7 +87,11 @@ class BytecodeFunctionObject : public FunctionObject {
             return std::format("<{} {}>", funcType, name);
     }
 
+    void SetClosure(std::shared_ptr<Scope> closure) { this->closure = closure; }
+    const std::shared_ptr<Scope>& GetClosure() const { return closure; }
+
    private:
+    std::shared_ptr<Scope> closure;
     int isInline = false;
     std::vector<Instruction> code;
     CompilerContext& ctx;
