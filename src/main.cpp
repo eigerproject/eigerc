@@ -145,14 +145,14 @@ CmdOptions ParseFlags(int argc, char* argv[]) {
     return opts;
 }
 
-const std::string_view version = "v0.3.2";
+const std::string_view version = "v0.3.3";
 
 static void PrintInfo() {
     std::string compileDate = __DATE__;
     std::string compileTime = __TIME__;
 
 #ifdef __GNUC__
-    std::string compilerInfo = "GCC " + std::to_string(__GNUC_MAJOR__) + "." +
+    std::string compilerInfo = "GCC " + std::to_string(__GNUC__) + "." +
                                std::to_string(__GNUC_MINOR__);
 #elif _MSC_VER
     std::string compilerInfo = "MSVC " + std::to_string(_MSC_VER);
@@ -199,6 +199,8 @@ static int Start(int argc, char* argv[]) {
         std::cerr << "UNKNOWN: " << e.what() << "\n";
         return 1;
     }
+
+    return 0;
 }
 
 }  // namespace EigerC
