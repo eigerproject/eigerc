@@ -69,6 +69,7 @@ std::string_view ErrorTypeToString(Error::Type type) {
         case Error::Type::RUNTIME_ERROR: return "RUNTIME_ERROR";
         case Error::Type::TYPE_ERROR: return "TYPE_ERROR";
         case Error::Type::INTERNAL_ERROR: return "INTERNAL_ERROR";
+        case Error::Type::ARG_ERROR: return "ARG_ERROR";
         default: return "ADD_TO_STRING_CONVERSION";
     }
 }
