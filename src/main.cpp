@@ -124,7 +124,7 @@ CmdOptions ParseFlags(int argc, char* argv[]) {
         std::string arg = argv[i];
         bool matched = false;
         for (auto& def : allArgs) {
-            if (arg == def.shortFlag || arg == def.longFlag) {
+            if ((arg == def.shortFlag || arg == def.longFlag) && !arg.empty()) {
                 matched = true;
                 if (def.t == CmdArg::Type::FLAG) {
                     *std::get<bool*>(def.dest) = true;
@@ -145,7 +145,7 @@ CmdOptions ParseFlags(int argc, char* argv[]) {
     return opts;
 }
 
-const std::string_view version = "v0.3.4";
+const std::string_view version = "v0.3.5";
 
 static void PrintInfo() {
     std::string compileDate = __DATE__;
