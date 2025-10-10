@@ -25,17 +25,18 @@ void BytecodeVM::ExecuteNextInstruction() {
     CallFrame& frame = callStack.top();
     auto &currentScope = frame.scope;
     size_t &ip = frame.ip;
+    bool pushReturnValue = frame.pushReturnValue;
 
     if(ip >= frame.code.size()) {
         PopCallFrame();
-        stack.push(std::make_shared<NixObject>());
+        if (pushReturnValue) stack.push(std::make_shared<NixObject>());
         return;
     }
 
     const Instruction &inst = frame.code[frame.ip];
 
     switch (inst.opcode) {
-        case Opcode::NO_OP: return;
+        case Opcode::NO_OP: break;
 
         case Opcode::LOAD_VAR:
             stack.push(currentScope->GetVar(static_cast<int>(inst.operand),
@@ -138,11 +139,9 @@ void BytecodeVM::ExecuteNextInstruction() {
 
             if(auto builtinFn = std::dynamic_pointer_cast<BuiltinFunctionObject>(fn)) {
                 auto val =builtinFn->Execute(args);
-                if(inst.flag)
-                stack.push(val);
+                if(inst.flag) stack.push(val);
             } else if (auto bcFn = std::dynamic_pointer_cast<BytecodeFunctionObject>(fn)) {
-                bcFn->StartExecute(args, this);
-                if (!inst.flag) PopSafe(inst.sourceCodeLine);
+                bcFn->StartExecute(args, this, inst.flag);
             }
 
             break;
@@ -150,9 +149,9 @@ void BytecodeVM::ExecuteNextInstruction() {
 
         case Opcode::RETURN: {
             auto val = PopSafe(inst.sourceCodeLine);
+
             PopCallFrame();
-            stack.push(val);
-            
+            if (pushReturnValue) stack.push(val);
             return;
         }
 

@@ -17,6 +17,7 @@ struct CallFrame {
     size_t ip;
     std::shared_ptr<Scope> scope;
     size_t stackBase;
+    bool pushReturnValue;
 };
     
 class BytecodeVM {
@@ -32,8 +33,8 @@ class BytecodeVM {
     std::shared_ptr<EiObject> Peek(int line = -1);
     bool CanPeek() { return !stack.empty(); }
 
-    void NewCallFrame(const std::vector<Instruction> &code, const std::shared_ptr<Scope> &scope) {
-        callStack.push(CallFrame{code, 0, scope, stack.size()});
+    void NewCallFrame(const std::vector<Instruction> &code, const std::shared_ptr<Scope> &scope, bool pushRetVal = false) {
+        callStack.push(CallFrame{code, 0, scope, stack.size(), pushRetVal});
     }
 
     void PopCallFrame() {

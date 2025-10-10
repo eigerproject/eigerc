@@ -68,7 +68,7 @@ class BytecodeFunctionObject : public FunctionObject {
     }
 
     void StartExecute(
-        const std::vector<std::shared_ptr<EiObject>>& values, BytecodeVM *vm) {
+        const std::vector<std::shared_ptr<EiObject>>& values, BytecodeVM *vm, bool pushRetVal) {
         auto fScope = std::make_shared<Scope>(ctx, closure);
 
         for (size_t i = 0; i < argNames.size(); ++i) {
@@ -77,7 +77,7 @@ class BytecodeFunctionObject : public FunctionObject {
             fScope->SetVar(id, values[i], line);
         }
 
-        vm->NewCallFrame(code, fScope);
+        vm->NewCallFrame(code, fScope, pushRetVal);
     }
 
     std::string AsString() const override {
