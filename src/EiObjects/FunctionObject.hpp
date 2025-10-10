@@ -22,8 +22,6 @@ class FunctionObject : public EiObject {
 
     virtual ~FunctionObject() = default;
 
-    virtual std::shared_ptr<EiObject> Execute(
-        const std::vector<std::shared_ptr<EiObject>>& values) = 0;
 
     std::string name;
     std::vector<std::string> argNames;
@@ -35,6 +33,9 @@ class BuiltinFunctionObject : public FunctionObject {
         : FunctionObject(name, argNames) {
         type = DType::FUNCTION;
     }
+
+    virtual std::shared_ptr<EiObject> Execute(
+        const std::vector<std::shared_ptr<EiObject>>& values) = 0;
 
     std::string AsString() const override {
         return std::format("<built-in function {}>", name);
@@ -61,12 +62,14 @@ class BytecodeFunctionObject : public FunctionObject {
           isInline(isInline),
           FunctionObject(name, argNames) {
         this->line = line;
+
+                for (const Instruction& inst : code)
+            inst.PrettyPrint();
     }
 
-    std::shared_ptr<EiObject> Execute(
-        const std::vector<std::shared_ptr<EiObject>>& values) override {
+    void StartExecute(
+        const std::vector<std::shared_ptr<EiObject>>& values, BytecodeVM *vm) {
         auto fScope = std::make_shared<Scope>(ctx, closure);
-        BytecodeVM vm(code, ctx, fScope);
 
         for (size_t i = 0; i < argNames.size(); ++i) {
             int id = ctx.GetVariableID(argNames[i]);
@@ -74,9 +77,7 @@ class BytecodeFunctionObject : public FunctionObject {
             fScope->SetVar(id, values[i], line);
         }
 
-        auto result = vm.ExecuteBytecode();
-        if (isInline) return vm.Peek();
-        return result;
+        vm->NewCallFrame(code, fScope);
     }
 
     std::string AsString() const override {
