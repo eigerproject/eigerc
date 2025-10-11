@@ -66,9 +66,10 @@ void BytecodeVM::ExecuteNextInstruction() {
             std::shared_ptr<BytecodeFunctionObject> fn =
                 std::dynamic_pointer_cast<BytecodeFunctionObject>(constant);
 
-            if (fn->GetClosure() == nullptr) fn->SetClosure(currentScope);
+            auto newFn = std::make_shared<BytecodeFunctionObject>(*fn);
+            newFn->SetClosure(currentScope);
 
-            stack.push(fn);
+            stack.push(newFn);
             break;
         }
 
