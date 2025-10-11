@@ -13,33 +13,35 @@
 namespace EigerC {
 
 struct CallFrame {
-    const std::vector<Instruction>& code;
+    const std::vector<Instruction> &code;
     size_t ip;
     std::shared_ptr<Scope> scope;
     size_t stackBase;
     bool pushReturnValue;
 };
-    
+
 class BytecodeVM {
    public:
     BytecodeVM(const std::vector<Instruction> &instructions,
                CompilerContext &ctx, std::shared_ptr<Scope> scope)
         : ctx(ctx) {
-            NewCallFrame(instructions, scope);
-        }
+        NewCallFrame(instructions, scope);
+    }
 
     void ExecuteBytecode();
 
     std::shared_ptr<EiObject> Peek(int line = -1);
     bool CanPeek() { return !stack.empty(); }
 
-    void NewCallFrame(const std::vector<Instruction> &code, const std::shared_ptr<Scope> &scope, bool pushRetVal = false) {
+    void NewCallFrame(const std::vector<Instruction> &code,
+                      const std::shared_ptr<Scope> &scope,
+                      bool pushRetVal = false) {
         callStack.push(CallFrame{code, 0, scope, stack.size(), pushRetVal});
     }
 
     void PopCallFrame() {
         size_t newSize = callStack.top().stackBase;
-        while(stack.size() > newSize) stack.pop();
+        while (stack.size() > newSize) stack.pop();
         callStack.pop();
     }
 

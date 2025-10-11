@@ -3,6 +3,7 @@
 #include "Error.hpp"
 #include "FunctionObject.hpp"
 #include "NumberObject.hpp"
+#include "Opcode.hpp"
 #include "StringObject.hpp"
 
 namespace EigerC {
@@ -121,9 +122,17 @@ void EigerC::FunctionNode::Codegen(BytecodeCompiler &compiler,
     BytecodeCompiler newCompiler;
     body->Codegen(newCompiler, ctx);
 
+    auto &code = newCompiler.GetInstructions();
+
+    if (!isExpression && !code.empty() && code[0].opcode == Opcode::NEW_SCOPE &&
+        code[code.size() - 1].opcode == Opcode::END_SCOPE) {
+        code.pop_back();
+        code.erase(code.begin());
+    } else
+        newCompiler.AddInstruction(Opcode::RETURN, -1);
+
     auto constv = ctx.AddConstant(std::make_shared<BytecodeFunctionObject>(
-        line, ctx, functionName, parameters, newCompiler.GetInstructions(),
-        isExpression));
+        line, ctx, functionName, parameters, code, isExpression));
 
     compiler.AddInstruction(Opcode::LOAD_FUNC, line, constv);
 
