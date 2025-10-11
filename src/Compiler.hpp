@@ -1,10 +1,8 @@
 #ifndef _EIGERC_COMPILER_HPP_
 #define _EIGERC_COMPILER_HPP_
 
-#include <unordered_map>
 #include <vector>
 
-#include "Context.hpp"
 #include "Instruction.hpp"
 #include "Parser.hpp"
 

@@ -1,10 +1,10 @@
 #include "Context.hpp"
 
-#include "FunctionObject.hpp"
+#include "CmdOpts.hpp"
 
 namespace EigerC {
 
-CompilerContext::CompilerContext() {}
+CompilerContext::CompilerContext(const CmdOptions& opts) : cmdOpts(opts) {}
 
 int CompilerContext::GetVariableID(const std::string& varName) {
     if (symbolTable.contains(varName)) return symbolTable[varName];

@@ -34,6 +34,7 @@ add_executable(${PROJECT_NAME}
     src/Scope.hpp
     src/Util.hpp
     src/VM.hpp
+    src/CmdOpts.hpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE src src/EiObjects)

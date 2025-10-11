@@ -7,7 +7,6 @@
 #include "Compiler.hpp"
 #include "Context.hpp"
 #include "EiObject.hpp"
-#include "Error.hpp"
 #include "Scope.hpp"
 
 namespace EigerC {
@@ -37,12 +36,18 @@ class BytecodeVM {
                       const std::shared_ptr<Scope> &scope,
                       bool pushRetVal = false) {
         callStack.push(CallFrame{code, 0, scope, stack.size(), pushRetVal});
+        if (ctx.cmdOpts.verbose)
+            std::cout << "Callframe created (" << callStack.size()
+                      << " size)\n";
     }
 
     void PopCallFrame() {
         size_t newSize = callStack.top().stackBase;
         while (stack.size() > newSize) stack.pop();
         callStack.pop();
+        if (ctx.cmdOpts.verbose)
+            std::cout << "Callframe destroyed (" << callStack.size()
+                      << " size)\n";
     }
 
    private:
