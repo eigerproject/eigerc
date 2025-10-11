@@ -61,6 +61,8 @@ class BytecodeFunctionObject : public FunctionObject {
           isInline(isInline),
           FunctionObject(name, argNames) {
         this->line = line;
+        if (ctx.cmdOpts.verbose)
+            for (const Instruction& c : code) c.PrettyPrint();
     }
 
     void StartExecute(const std::vector<std::shared_ptr<EiObject>>& values,

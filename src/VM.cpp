@@ -143,7 +143,10 @@ void BytecodeVM::ExecuteNextInstruction() {
             } else if (auto bcFn =
                            std::dynamic_pointer_cast<BytecodeFunctionObject>(
                                fn)) {
+                bool doTailCallOp = ip >= frame.code.size() - 1;
+                if (doTailCallOp) PopCallFrame();
                 bcFn->StartExecute(args, this, inst.flag);
+                if (doTailCallOp) return;
             }
 
             break;
