@@ -14,16 +14,6 @@ add_executable(${PROJECT_NAME}
     src/Util.cpp
     src/Context.cpp
     src/Scope.cpp
-    src/EiObjects/EiObject.cpp
-    src/EiObjects/NumberObject.cpp
-    src/EiObjects/StringObject.cpp
-
-    src/EiObjects/BoolObject.hpp
-    src/EiObjects/DType.hpp
-    src/EiObjects/EiObject.hpp
-    src/EiObjects/FunctionObject.hpp
-    src/EiObjects/NumberObject.hpp
-    src/EiObjects/StringObject.hpp
     src/Compiler.hpp
     src/Context.hpp
     src/Error.hpp
@@ -35,6 +25,17 @@ add_executable(${PROJECT_NAME}
     src/Util.hpp
     src/VM.hpp
     src/CmdOpts.hpp
+
+    src/EiObjects/EiObject.cpp
+    src/EiObjects/NumberObject.cpp
+    src/EiObjects/StringObject.cpp
+    src/EiObjects/BoolObject.hpp
+    src/EiObjects/DType.hpp
+    src/EiObjects/EiObject.hpp
+    src/EiObjects/FunctionObject.hpp
+    src/EiObjects/FunctionObject.cpp
+    src/EiObjects/NumberObject.hpp
+    src/EiObjects/StringObject.hpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE src src/EiObjects)
