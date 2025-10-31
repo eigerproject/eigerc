@@ -28,6 +28,24 @@ std::unique_ptr<ASTNode> Parser::ParseScope() {
     return scope;
 }
 
+std::unique_ptr<ASTNode> Parser::ParseArray() {
+    std::unique_ptr<ArrayNode> arr =
+        std::make_unique<ArrayNode>(currentToken.line);
+
+    Expect(TokenType::LSQRBRACE);
+
+    while (currentToken.type != TokenType::ENDOFFILE &&
+           currentToken.type != TokenType::RSQRBRACE) {
+        arr->elements.push_back(std::move(ParseExpression()));
+
+        if (currentToken.type != TokenType::COMMA) break;
+        Expect(TokenType::COMMA);
+    }
+
+    Expect(TokenType::RSQRBRACE);
+    return arr;
+}
+
 std::unique_ptr<ASTNode> Parser::ParseStatement() {
     std::unique_ptr<ASTNode> resultNode;
 
@@ -75,43 +93,42 @@ std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
 }
 
 std::unique_ptr<ASTNode> Parser::ParsePrimary() {
-    if (currentToken.type == TokenType::NUMBER) {
-        int line = currentToken.line;
-        double val = std::stod(currentToken.lexeme);
-        Advance();
-        return std::make_unique<NumberNode>(val, line);
+    switch (currentToken.type) {
+        case TokenType::NUMBER: {
+            int line = currentToken.line;
+            double val = std::stod(currentToken.lexeme);
+            Advance();
+            return std::make_unique<NumberNode>(val, line);
+        }
+        case TokenType::LPAREN: {
+            Expect(TokenType::LPAREN);
+            auto expr = ParseExpression();
+            Expect(TokenType::RPAREN);
+            return expr;
+        }
+        case TokenType::STRING: {
+            int line = currentToken.line;
+
+            std::string strValue = currentToken.lexeme;
+            Advance();
+            return std::make_unique<StringNode>(strValue, line);
+        }
+        case TokenType::IDENTIFIER: {
+            if (currentToken.lexeme == "func") return ParseFunction();
+
+            int line = currentToken.line;
+
+            std::string identValue = currentToken.lexeme;
+            Advance();
+
+            if (currentToken.type == TokenType::LPAREN)
+                return ParseCall(identValue, line);
+
+            return std::make_unique<VariableNode>(identValue, line);
+        }
+        case TokenType::LSQRBRACE: return ParseArray();
+        case TokenType::ENDOFFILE: return nullptr;
     }
-
-    if (currentToken.type == TokenType::LPAREN) {
-        Expect(TokenType::LPAREN);
-        auto expr = ParseExpression();
-        Expect(TokenType::RPAREN);
-        return expr;
-    }
-
-    if (currentToken.type == TokenType::STRING) {
-        int line = currentToken.line;
-
-        std::string strValue = currentToken.lexeme;
-        Advance();
-        return std::make_unique<StringNode>(strValue, line);
-    }
-
-    if (currentToken.type == TokenType::IDENTIFIER) {
-        if (currentToken.lexeme == "func") return ParseFunction();
-
-        int line = currentToken.line;
-
-        std::string identValue = currentToken.lexeme;
-        Advance();
-
-        if (currentToken.type == TokenType::LPAREN)
-            return ParseCall(identValue, line);
-
-        return std::make_unique<VariableNode>(identValue, line);
-    }
-
-    if (currentToken.type == TokenType::ENDOFFILE) return nullptr;
 
     throw Error(Error::Type::SYNTAX_ERROR,
                 std::format("Unexpected factor {}",

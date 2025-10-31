@@ -22,7 +22,7 @@ struct ASTNode {
 
     virtual ~ASTNode() = default;
 
-    virtual void PrettyPrint(int indent = 0) = 0;
+    virtual void PrettyPrint(int indent = 0) const = 0;
 
     virtual void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) = 0;
 };
@@ -32,7 +32,7 @@ struct ScopeNode : public ASTNode {
 
     ScopeNode(int line) : ASTNode(line) {}
 
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "SCOPE" << std::endl;
         for (const auto &stmt : statements) stmt->PrettyPrint(indent + 1);
@@ -53,7 +53,7 @@ struct IfNode : public ASTNode {
           elseBlock(std::move(eb)),
           ASTNode(line) {}
 
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "IF" << std::endl;
         condition->PrettyPrint(indent + 1);
@@ -78,7 +78,7 @@ struct FunctionNode : public ASTNode {
           body(std::move(body)),
           ASTNode(line) {}
 
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "FUNCTION " << functionName << "( ";
         for (const auto &param : parameters) std::cout << param << " ";
@@ -97,7 +97,7 @@ struct LetNode : public ASTNode {
           value(std::move(value)),
           ASTNode(line) {}
 
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "LET " << variableName << std::endl;
         if (value) value->PrettyPrint(indent + 1);
@@ -110,7 +110,7 @@ struct NumberNode : public ASTNode {
     double value;
     NumberNode(double value, int line) : value(value), ASTNode(line) {}
 
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << value << std::endl;
     }
@@ -122,7 +122,7 @@ struct StringNode : public ASTNode {
     std::string value;
     StringNode(std::string value, int line)
         : value(std::move(value)), ASTNode(line) {}
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "\"" << value << "\"" << std::endl;
     };
@@ -135,7 +135,7 @@ struct VariableNode : public ASTNode {
     VariableNode(std::string name, int line)
         : name(std::move(name)), ASTNode(line) {}
 
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << name << std::endl;
     }
@@ -155,7 +155,7 @@ struct BinaryOpNode : public ASTNode {
           left(std::move(left)),
           right(std::move(right)) {}
 
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
 
         std::cout << indentStr << Util::TokenTypeToString(op) << std::endl;
@@ -172,7 +172,7 @@ struct RetNode : public ASTNode {
     RetNode(std::unique_ptr<ASTNode> value, int line)
         : value(std::move(value)), ASTNode(line) {}
 
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "RETURN" << std::endl;
         value->PrettyPrint(indent + 1);
@@ -191,10 +191,24 @@ struct CallNode : public ASTNode {
           arguments(std::move(arguments)),
           ASTNode(line) {}
 
-    void PrettyPrint(int indent = 0) override {
+    void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << functionName << std::endl;
         for (const auto &arg : arguments) { arg->PrettyPrint(indent + 1); }
+    }
+
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
+};
+
+struct ArrayNode : public ASTNode {
+    std::vector<std::unique_ptr<ASTNode>> elements{};
+
+    ArrayNode(int line) : ASTNode(line) {}
+
+    void PrettyPrint(int indent = 0) const override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << "ARR" << std::endl;
+        for (const auto &el : elements) { el->PrettyPrint(indent + 1); }
     }
 
     void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
@@ -215,6 +229,7 @@ class Parser {
     std::unique_ptr<ASTNode> ParsePrimary();
     std::unique_ptr<ASTNode> ParseCall(const std::string &functionName,
                                        int line);
+    std::unique_ptr<ASTNode> ParseArray();
 
     std::unique_ptr<ASTNode> ParseLetStatement();
     std::unique_ptr<ASTNode> ParseIfStatement();
