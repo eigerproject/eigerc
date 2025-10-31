@@ -22,6 +22,8 @@ std::string_view TokenTypeToString(TokenType type) {
         case TokenType::COMMA: return "COMMA";
         case TokenType::LPAREN: return "LPAREN";
         case TokenType::RPAREN: return "RPAREN";
+        case TokenType::LSQRBRACE: return "LSQRBRACE";
+        case TokenType::RSQRBRACE: return "RSQRBRACE";
         default: return "ADD_TO_STRING_CONVERSION";
     }
 }

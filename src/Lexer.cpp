@@ -113,6 +113,10 @@ Token Lexer::GetNextToken() {
             case '(': Advance(); return {TokenType::LPAREN, line};
             case ')': Advance(); return {TokenType::RPAREN, line};
             case ',': Advance(); return {TokenType::COMMA, line};
+            case '{': Advance(); return {TokenType::LBRACE, line};
+            case '}': Advance(); return {TokenType::RBRACE, line};
+            case '[': Advance(); return {TokenType::LSQRBRACE, line};
+            case ']': Advance(); return {TokenType::RSQRBRACE, line};
             case '=': {
                 Advance();
                 return {TokenType::ASSIGN, line};
@@ -137,8 +141,6 @@ Token Lexer::GetNextToken() {
                 Advance();
                 return {TokenType::EQ, line};
             }
-            case '{': Advance(); return {TokenType::LBRACE, line};
-            case '}': Advance(); return {TokenType::RBRACE, line};
             case '<': {
                 Advance();
                 if (currentChar == '=') {

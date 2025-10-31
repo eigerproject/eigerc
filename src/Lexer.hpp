@@ -26,7 +26,9 @@ enum class TokenType {
     GTE,
     LTE,
     LBRACE,
-    RBRACE
+    RBRACE,
+    LSQRBRACE,
+    RSQRBRACE
 };
 
 struct Token {
