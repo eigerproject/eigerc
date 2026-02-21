@@ -59,6 +59,12 @@ std::string_view OpcodeToString(Opcode opcode) {
         case Opcode::DIVIDE: return "DIVIDE";
         case Opcode::JUMP: return "JUMP";
         case Opcode::JUMP_IF_FALSE: return "JUMP_IF_FALSE";
+        case Opcode::EQUAL: return "EQUAL";
+        case Opcode::NEQUAL: return "NEQUAL";
+        case Opcode::GREATER: return "GREATER";
+        case Opcode::LESS: return "LESS";
+        case Opcode::GREATEREQ: return "GREATEREQ";
+        case Opcode::LESSEQ: return "LESSEQ";
         default: return "ADD_TO_STRING_CONVERSION";
     }
 }
@@ -72,6 +78,7 @@ std::string_view ErrorTypeToString(Error::Type type) {
         case Error::Type::TYPE_ERROR: return "TYPE_ERROR";
         case Error::Type::INTERNAL_ERROR: return "INTERNAL_ERROR";
         case Error::Type::ARG_ERROR: return "ARG_ERROR";
+        case Error::Type::MATH_ERROR: return "MATH_ERROR";
         default: return "ADD_TO_STRING_CONVERSION";
     }
 }

@@ -6,11 +6,15 @@ namespace EigerC {
 
 std::shared_ptr<EiObject> StringObject::operator==(
     const EiObject& other) const {
+    if (other.type != DType::STRING) return EiObject::operator==(other);
+
     return std::make_shared<BoolObject>(line, value == other.AsString());
 }
 
 std::shared_ptr<EiObject> StringObject::operator!=(
     const EiObject& other) const {
+    if (other.type != DType::STRING) return EiObject::operator==(other);
+
     return std::make_shared<BoolObject>(line, value != other.AsString());
 }
 

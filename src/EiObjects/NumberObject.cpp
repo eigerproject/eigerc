@@ -6,29 +6,35 @@ namespace EigerC {
 
 std::shared_ptr<EiObject> NumberObject::operator==(
     const EiObject &other) const {
+    if (other.type != DType::NUMBER) return EiObject::operator/(other);
     return std::make_shared<BoolObject>(line, value == other.AsNumber());
 };
 
 std::shared_ptr<EiObject> NumberObject::operator!=(
     const EiObject &other) const {
+    if (other.type != DType::NUMBER) return EiObject::operator/(other);
     return std::make_shared<BoolObject>(line, value != other.AsNumber());
 };
 
 std::shared_ptr<EiObject> NumberObject::operator<(const EiObject &other) const {
+    if (other.type != DType::NUMBER) return EiObject::operator/(other);
     return std::make_shared<BoolObject>(line, value < other.AsNumber());
 };
 
 std::shared_ptr<EiObject> NumberObject::operator>(const EiObject &other) const {
+    if (other.type != DType::NUMBER) return EiObject::operator/(other);
     return std::make_shared<BoolObject>(line, value > other.AsNumber());
 };
 
 std::shared_ptr<EiObject> NumberObject::operator<=(
     const EiObject &other) const {
+    if (other.type != DType::NUMBER) return EiObject::operator/(other);
     return std::make_shared<BoolObject>(line, value <= other.AsNumber());
 };
 
 std::shared_ptr<EiObject> NumberObject::operator>=(
     const EiObject &other) const {
+    if (other.type != DType::NUMBER) return EiObject::operator/(other);
     return std::make_shared<BoolObject>(line, value >= other.AsNumber());
 };
 

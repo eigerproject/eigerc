@@ -14,7 +14,8 @@ class Error : public std::exception {
         NAME_ERROR,
         RUNTIME_ERROR,
         TYPE_ERROR,
-        INTERNAL_ERROR
+        INTERNAL_ERROR,
+        MATH_ERROR
     };
 
     Error(Type type, const std::string& message, int line = -1)

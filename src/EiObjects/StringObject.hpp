@@ -2,6 +2,7 @@
 #define _EIGERC_STRINGOBJECT_HPP_
 
 #include "EiObject.hpp"
+#include "Error.hpp"
 
 namespace EigerC {
 
@@ -17,12 +18,16 @@ class StringObject : public EiObject {
     std::string AsString() const override { return value; }
 
     std::shared_ptr<EiObject> operator+(const EiObject &other) const override {
+        if (other.type != DType::STRING) return EiObject::operator+(other);
+
         auto result = std::make_shared<StringObject>(line);
         result->value = value + other.AsString();
         return result;
     }
 
     std::shared_ptr<EiObject> operator*(const EiObject &other) const override {
+        if (other.type != DType::NUMBER) return EiObject::operator+(other);
+
         auto result = std::make_shared<StringObject>(line);
         int times = other.AsNumber();
         for (int i = 0; i < times; ++i) result->value += value;
