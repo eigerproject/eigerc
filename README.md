@@ -1,2 +1,3 @@
-# eigerc
-The Eiger Programming Language Compiler.
+# EigerC
+
+The C++ implementation of the Eiger Programming Language.
