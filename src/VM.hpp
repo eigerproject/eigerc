@@ -36,6 +36,7 @@ class BytecodeVM {
                       const std::shared_ptr<Scope> &scope,
                       bool pushRetVal = false) {
         callStack.push(CallFrame{code, 0, scope, stack.size(), pushRetVal});
+
         if (ctx.cmdOpts.verbose)
             std::cout << "Callframe created (" << callStack.size()
                       << " size)\n";

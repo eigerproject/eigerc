@@ -1,5 +1,7 @@
 #include "Parser.hpp"
 
+#include <algorithm>
+
 #include "Error.hpp"
 
 namespace EigerC {
@@ -93,47 +95,62 @@ std::unique_ptr<ASTNode> Parser::ParseExpression(int minPrecedence) {
 }
 
 std::unique_ptr<ASTNode> Parser::ParsePrimary() {
+    std::unique_ptr<ASTNode> node = nullptr;
+    int line;
+
     switch (currentToken.type) {
         case TokenType::NUMBER: {
-            int line = currentToken.line;
+            line = currentToken.line;
             double val = std::stod(currentToken.lexeme);
             Advance();
-            return std::make_unique<NumberNode>(val, line);
+            node = std::make_unique<NumberNode>(val, line);
+            break;
         }
         case TokenType::LPAREN: {
             Expect(TokenType::LPAREN);
             auto expr = ParseExpression();
             Expect(TokenType::RPAREN);
-            return expr;
+            node = std::move(expr);
+            break;
         }
         case TokenType::STRING: {
-            int line = currentToken.line;
+            line = currentToken.line;
 
             std::string strValue = currentToken.lexeme;
             Advance();
-            return std::make_unique<StringNode>(strValue, line);
+            node = std::make_unique<StringNode>(strValue, line);
+            break;
         }
         case TokenType::IDENTIFIER: {
-            if (currentToken.lexeme == "func") return ParseFunction();
+            if (currentToken.lexeme == "func") {
+                node = ParseFunction();
+                break;
+            }
 
-            int line = currentToken.line;
+            line = currentToken.line;
 
             std::string identValue = currentToken.lexeme;
             Advance();
 
-            if (currentToken.type == TokenType::LPAREN)
-                return ParseCall(identValue, line);
-
-            return std::make_unique<VariableNode>(identValue, line);
+            node = std::make_unique<VariableNode>(identValue, line);
+            break;
         }
-        case TokenType::LSQRBRACE: return ParseArray();
+        case TokenType::LSQRBRACE: node = ParseArray(); break;
         case TokenType::ENDOFFILE: return nullptr;
     }
 
-    throw Error(Error::Type::SYNTAX_ERROR,
-                std::format("Unexpected factor {}",
-                            Util::TokenTypeToString(currentToken.type)),
-                currentToken.line);
+    if (node == nullptr)
+        throw Error(Error::Type::SYNTAX_ERROR,
+                    std::format("Unexpected factor {}",
+                                Util::TokenTypeToString(currentToken.type)),
+                    currentToken.line);
+    else {
+        while (currentToken.type == TokenType::LPAREN) {
+            node = ParseCall(std::move(node), line);
+        }
+    }
+
+    return node;
 }
 
 void Parser::Expect(TokenType type) {
@@ -147,8 +164,8 @@ void Parser::Expect(TokenType type) {
     Advance();
 }
 
-std::unique_ptr<ASTNode> Parser::ParseCall(const std::string& functionName,
-                                           int line) {
+std::unique_ptr<ASTNode> Parser::ParseCall(
+    std::unique_ptr<ASTNode> functionNode, int line) {
     Expect(TokenType::LPAREN);
 
     std::vector<std::unique_ptr<ASTNode>> arguments;
@@ -170,7 +187,8 @@ std::unique_ptr<ASTNode> Parser::ParseCall(const std::string& functionName,
     }
 
     Expect(TokenType::RPAREN);
-    return std::make_unique<CallNode>(functionName, std::move(arguments), line);
+    return std::make_unique<CallNode>(std::move(functionNode),
+                                      std::move(arguments), line);
 }
 
 std::unique_ptr<ASTNode> Parser::ParseRetStatement() {

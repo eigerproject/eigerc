@@ -182,18 +182,20 @@ struct RetNode : public ASTNode {
 };
 
 struct CallNode : public ASTNode {
-    std::string functionName;
+    std::unique_ptr<ASTNode> functionNode;
     std::vector<std::unique_ptr<ASTNode>> arguments;
 
-    CallNode(std::string functionName,
+    CallNode(std::unique_ptr<ASTNode> functionNode,
              std::vector<std::unique_ptr<ASTNode>> arguments, int line)
-        : functionName(std::move(functionName)),
+        : functionNode(std::move(functionNode)),
           arguments(std::move(arguments)),
           ASTNode(line) {}
 
     void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
-        std::cout << indentStr << functionName << std::endl;
+        std::cout << indentStr << "CALL" << std::endl;
+        functionNode->PrettyPrint(indent + 1);
+        std::cout << indentStr << "ARGS" << std::endl;
         for (const auto &arg : arguments) { arg->PrettyPrint(indent + 1); }
     }
 
@@ -227,7 +229,7 @@ class Parser {
     std::unique_ptr<ASTNode> ParseStatement();
     std::unique_ptr<ASTNode> ParseExpression(int minPrecedence = 0);
     std::unique_ptr<ASTNode> ParsePrimary();
-    std::unique_ptr<ASTNode> ParseCall(const std::string &functionName,
+    std::unique_ptr<ASTNode> ParseCall(std::unique_ptr<ASTNode> functionNode,
                                        int line);
     std::unique_ptr<ASTNode> ParseArray();
 

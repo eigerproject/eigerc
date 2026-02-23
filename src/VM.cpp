@@ -66,10 +66,9 @@ void BytecodeVM::ExecuteNextInstruction() {
             std::shared_ptr<BytecodeFunctionObject> fn =
                 std::dynamic_pointer_cast<BytecodeFunctionObject>(constant);
 
-            auto newFn = std::make_shared<BytecodeFunctionObject>(*fn);
-            newFn->SetClosure(currentScope);
+            fn->SetClosure(currentScope);
+            stack.push(fn);
 
-            stack.push(newFn);
             break;
         }
 
@@ -116,14 +115,12 @@ void BytecodeVM::ExecuteNextInstruction() {
             break;
 
         case Opcode::CALL: {
-            int fnId = static_cast<int>(inst.operand);
-            std::shared_ptr<EiObject> fnObj =
-                currentScope->GetVar(fnId, inst.sourceCodeLine);
+            std::shared_ptr<EiObject> fnObj = PopSafe(inst.sourceCodeLine);
 
             if (fnObj->type != DType::FUNCTION) {
                 throw Error(
                     Error ::Type::TYPE_ERROR,
-                    std::format("{} is not callable", ctx.GetVarName(fnId)),
+                    std::format("Object {} is not callable", fnObj->AsString()),
                     inst.sourceCodeLine);
             }
 
@@ -131,7 +128,7 @@ void BytecodeVM::ExecuteNextInstruction() {
                 std::dynamic_pointer_cast<FunctionObject>(fnObj);
 
             // get args from stack
-            int argCount = fn->argNames.size();
+            int argCount = inst.operand;
             std::vector<std::shared_ptr<EiObject>> args(argCount);
 
             for (int i = argCount - 1; i >= 0; --i)

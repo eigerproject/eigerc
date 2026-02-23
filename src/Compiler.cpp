@@ -107,7 +107,8 @@ void BinaryOpNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
 
 void CallNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     for (const auto &arg : arguments) arg->Codegen(compiler, ctx);
-    compiler.AddInstruction(Opcode::CALL, line, ctx.GetVariableID(functionName),
+    functionNode->Codegen(compiler, ctx);
+    compiler.AddInstruction(Opcode::CALL, line, arguments.size(),
                             !isAsStatement);
 }
 

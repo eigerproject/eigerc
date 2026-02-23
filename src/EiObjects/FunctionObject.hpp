@@ -24,6 +24,10 @@ class FunctionObject : public EiObject {
 
     std::string name;
     std::vector<std::string> argNames;
+
+    // to add later
+    // if true, last variable name in argNames is the variadic collector
+    // bool isVariadic = false;
 };
 
 class BuiltinFunctionObject : public FunctionObject {
