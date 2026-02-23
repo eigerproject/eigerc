@@ -2,6 +2,10 @@
 
 ### The main implementation of the Eiger Programming Language.
 
+> [!WARNING]
+> This implementation of the language is not yet complete.\
+> For the legacy implementation, refer to the ![EigerCS repository](https://github.com/eigerproject/eigercs)
+
 ## Building
 
 ### Requirements
