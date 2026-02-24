@@ -1,6 +1,7 @@
 #include "Util.hpp"
 
-#include "EiObject.hpp"
+#include "DType.hpp"
+#include "Lexer.hpp"
 #include "Opcode.hpp"
 
 namespace EigerC {
@@ -8,6 +9,7 @@ namespace Util {
 
 std::string_view TokenTypeToString(TokenType type) {
     switch (type) {
+        case TokenType::UNKNOWN: return "UNKNOWN";
         case TokenType::IDENTIFIER: return "IDENTIFIER";
         case TokenType::NUMBER: return "NUMBER";
         case TokenType::STRING: return "STRING";
@@ -24,6 +26,12 @@ std::string_view TokenTypeToString(TokenType type) {
         case TokenType::RPAREN: return "RPAREN";
         case TokenType::LSQRBRACE: return "LSQRBRACE";
         case TokenType::RSQRBRACE: return "RSQRBRACE";
+        case TokenType::EQ: return "EQ";
+        case TokenType::NEQ: return "NEQ";
+        case TokenType::GT: return "GT";
+        case TokenType::LT: return "LT";
+        case TokenType::GTE: return "GTE";
+        case TokenType::LTE: return "LTE";
         default: return "ADD_TO_STRING_CONVERSION";
     }
 }
