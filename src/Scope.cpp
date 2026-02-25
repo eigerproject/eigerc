@@ -33,8 +33,7 @@ void Scope::ExpectVarExists(int id, int line) {
     }
 
     throw Error(Error::Type::RUNTIME_ERROR,
-                std::format("Variable {} is not defined", ctx.GetVarName(id)),
-                line);
+                std::format("Symbol {} is unbound", ctx.GetVarName(id)), line);
 }
 
 std::shared_ptr<EiObject> Scope::GetVar(int id, int line) {
@@ -48,8 +47,7 @@ std::shared_ptr<EiObject> Scope::GetVar(int id, int line) {
     }
 
     throw Error(Error::Type::RUNTIME_ERROR,
-                std::format("Variable {} is not defined", ctx.GetVarName(id)),
-                line);
+                std::format("Symbol {} is unbound", ctx.GetVarName(id)), line);
 }
 
 }  // namespace EigerC
