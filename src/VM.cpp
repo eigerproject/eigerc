@@ -1,5 +1,6 @@
 #include "VM.hpp"
 
+#include "ArrayObject.hpp"
 #include "FunctionObject.hpp"
 #include "NumberObject.hpp"
 
@@ -68,6 +69,17 @@ void BytecodeVM::ExecuteNextInstruction() {
 
             fn->SetClosure(currentScope);
             stack.push(fn);
+
+            break;
+        }
+
+        case Opcode::MAKE_ARRAY: {
+            std::vector<std::shared_ptr<EiObject>> elements;
+            for (int i = 0; i < inst.operand; ++i)
+                elements.push_back(PopSafe(inst.sourceCodeLine));
+
+            stack.push(
+                std::make_shared<ArrayObject>(inst.sourceCodeLine, elements));
 
             break;
         }

@@ -38,6 +38,8 @@ enum class Opcode {
 
     JUMP_IF_FALSE,  // Jump if top of stack is falsy value
     JUMP,           // Unconditional jump
+
+    MAKE_ARRAY,  // Make array of n items in stack
 };
 
 }

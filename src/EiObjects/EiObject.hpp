@@ -100,6 +100,13 @@ class EiObject {
 
     virtual operator bool() const { return true; };
 
+    virtual std::shared_ptr<EiObject> operator!() const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Operator `!` to object type {}",
+                                Util::ObjectDTypeToString(type)),
+                    line);
+    };
+
     int line = -1;
     DType type = DType::UNKNOWN;
 };

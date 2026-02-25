@@ -141,7 +141,7 @@ CmdOptions ParseFlags(int argc, char* argv[]) {
     return opts;
 }
 
-const std::string_view version = "v0.5.3";
+const std::string_view version = "v0.6.0";
 
 static void PrintInfo() {
     std::string compileDate = __DATE__;

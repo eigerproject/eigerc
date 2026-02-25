@@ -27,6 +27,10 @@ class BoolObject : public EiObject {
 
     operator bool() const override { return value; };
 
+    std::shared_ptr<EiObject> operator!() const override {
+        return std::make_shared<BoolObject>(line, !value);
+    };
+
     bool value = false;
 };
 

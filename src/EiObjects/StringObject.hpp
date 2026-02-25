@@ -26,7 +26,7 @@ class StringObject : public EiObject {
     }
 
     std::shared_ptr<EiObject> operator*(const EiObject &other) const override {
-        if (other.type != DType::NUMBER) return EiObject::operator+(other);
+        if (other.type != DType::NUMBER) return EiObject::operator*(other);
 
         auto result = std::make_shared<StringObject>(line);
         int times = other.AsNumber();
@@ -35,9 +35,11 @@ class StringObject : public EiObject {
         return result;
     }
 
-    virtual std::shared_ptr<EiObject> operator==(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator==(
+        const EiObject &other) const override;
 
-    virtual std::shared_ptr<EiObject> operator!=(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator!=(
+        const EiObject &other) const override;
 
     std::string value;
 };

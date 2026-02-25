@@ -27,21 +27,21 @@ class NumberObject : public EiObject {
     }
 
     std::shared_ptr<EiObject> operator+(const EiObject &other) const override {
-        if (other.type != DType::NUMBER) return EiObject::operator/(other);
+        if (other.type != DType::NUMBER) return EiObject::operator+(other);
         auto result = std::make_shared<NumberObject>(line);
         result->value = value + other.AsNumber();
         return result;
     }
 
     std::shared_ptr<EiObject> operator-(const EiObject &other) const override {
-        if (other.type != DType::NUMBER) return EiObject::operator/(other);
+        if (other.type != DType::NUMBER) return EiObject::operator-(other);
         auto result = std::make_shared<NumberObject>(line);
         result->value = value - other.AsNumber();
         return result;
     }
 
     std::shared_ptr<EiObject> operator*(const EiObject &other) const override {
-        if (other.type != DType::NUMBER) return EiObject::operator/(other);
+        if (other.type != DType::NUMBER) return EiObject::operator*(other);
         auto result = std::make_shared<NumberObject>(line);
         result->value = value * other.AsNumber();
         return result;
@@ -57,17 +57,23 @@ class NumberObject : public EiObject {
         return result;
     }
 
-    virtual std::shared_ptr<EiObject> operator==(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator==(
+        const EiObject &other) const override;
 
-    virtual std::shared_ptr<EiObject> operator!=(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator!=(
+        const EiObject &other) const override;
 
-    virtual std::shared_ptr<EiObject> operator<(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator<(
+        const EiObject &other) const override;
 
-    virtual std::shared_ptr<EiObject> operator>(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator>(
+        const EiObject &other) const override;
 
-    virtual std::shared_ptr<EiObject> operator<=(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator<=(
+        const EiObject &other) const override;
 
-    virtual std::shared_ptr<EiObject> operator>=(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator>=(
+        const EiObject &other) const override;
 
     operator bool() const override { return value != 0.0; };
 

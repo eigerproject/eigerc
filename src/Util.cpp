@@ -73,6 +73,7 @@ std::string_view OpcodeToString(Opcode opcode) {
         case Opcode::LESS: return "LESS";
         case Opcode::GREATEREQ: return "GREATEREQ";
         case Opcode::LESSEQ: return "LESSEQ";
+        case Opcode::MAKE_ARRAY: return "MAKE_ARRAY";
         default: return "ADD_TO_STRING_CONVERSION";
     }
 }

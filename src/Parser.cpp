@@ -137,6 +137,7 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
         }
         case TokenType::LSQRBRACE: node = ParseArray(); break;
         case TokenType::ENDOFFILE: return nullptr;
+        default: break;
     }
 
     if (node == nullptr)
@@ -204,7 +205,19 @@ std::unique_ptr<ASTNode> Parser::ParseRetStatement() {
 std::unique_ptr<ASTNode> Parser::ParseIfStatement() {
     Advance();
     auto condition = ParseExpression();
+
+    if (!condition) {
+        throw Error(Error::Type::SYNTAX_ERROR, "Expected expression after if",
+                    currentToken.line);
+    }
+
     auto ifBlock = ParseStatement();
+
+    if (!ifBlock) {
+        throw Error(Error::Type::SYNTAX_ERROR,
+                    "Expected statement after expression in if",
+                    currentToken.line);
+    }
 
     std::unique_ptr<ASTNode> elseBlock = nullptr;
     if (currentToken.type == TokenType::IDENTIFIER &&

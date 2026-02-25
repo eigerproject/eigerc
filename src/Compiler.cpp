@@ -148,7 +148,10 @@ void EigerC::FunctionNode::Codegen(BytecodeCompiler& compiler,
 
 void EigerC::ArrayNode::Codegen(BytecodeCompiler& compiler,
                                 CompilerContext& ctx) {
-    // TODO: Implement array codegen
+    for (int i = elements.size() - 1; i >= 0; --i)
+        elements[i]->Codegen(compiler, ctx);
+
+    compiler.AddInstruction(Opcode::MAKE_ARRAY, line, elements.size());
 }
 
 }  // namespace EigerC
