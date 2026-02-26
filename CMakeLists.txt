@@ -5,7 +5,16 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(${PROJECT_NAME}
+enable_testing()
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/heads/main.zip
+)
+FetchContent_MakeAvailable(googletest)
+
+add_executable(eigerc
     src/main.cpp
     src/Lexer.cpp
     src/Parser.cpp
@@ -36,6 +45,21 @@ add_executable(${PROJECT_NAME}
     src/EiObjects/FunctionObject.cpp
     src/EiObjects/NumberObject.hpp
     src/EiObjects/StringObject.hpp
+    src/EiObjects/ArrayObject.hpp
 )
+
+add_executable(eigertest tests/runner.cpp)
+
+add_custom_target(runAlways ALL)
+add_custom_command(
+    TARGET runAlways
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+            "$<TARGET_FILE_DIR:eigertest>/tests"
+    COMMENT "Copying tests to eigertest build location"
+)
+
+target_link_libraries(eigertest gtest_main)
 
 target_include_directories(${PROJECT_NAME} PRIVATE src src/EiObjects)

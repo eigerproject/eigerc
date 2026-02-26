@@ -1,0 +1,5 @@
+~ Arithmetic Tests
+
+emitln(1 + 2 * 3)
+emitln(4 - 5 / 2)
+emitln(-(1 - 2 * 3))
