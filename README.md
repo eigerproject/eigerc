@@ -27,8 +27,8 @@ cmake --build build
 ### Command line options
 
 ```
--s, --source	Executes certain file (otherwise, a shell is opened).
--h, --help	Shows this screen.
---verbose	Prints additional info during execution.
--v, --version	Prints EigerC version.
+-s, --source   Executes certain file (otherwise, a shell is opened).
+-h, --help     Shows help.
+--verbose      Prints additional info during execution.
+-v, --version  Prints EigerC version.
 ```
