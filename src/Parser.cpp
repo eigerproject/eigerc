@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "Error.hpp"
+#include "Lexer.hpp"
 
 namespace EigerC {
 
@@ -127,6 +128,15 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
                 break;
             }
 
+            if (currentToken.lexeme == "not") {
+                TokenType op = currentToken.type;
+                Advance();
+                std::unique_ptr<ASTNode> operand = ParsePrimary();
+                node =
+                    std::make_unique<UnaryOpNode>(op, line, std::move(operand));
+                break;
+            }
+
             line = currentToken.line;
 
             std::string identValue = currentToken.lexeme;
@@ -137,6 +147,16 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
         }
         case TokenType::LSQRBRACE: node = ParseArray(); break;
         case TokenType::ENDOFFILE: return nullptr;
+
+        case TokenType::PLUS:
+        case TokenType::MINUS: {
+            TokenType op = currentToken.type;
+            Advance();
+            std::unique_ptr<ASTNode> operand = ParsePrimary();
+            node = std::make_unique<UnaryOpNode>(op, line, std::move(operand));
+            break;
+        }
+
         default: break;
     }
 

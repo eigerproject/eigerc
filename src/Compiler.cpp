@@ -4,6 +4,7 @@
 #include "FunctionObject.hpp"
 #include "NumberObject.hpp"
 #include "Opcode.hpp"
+#include "Parser.hpp"
 #include "StringObject.hpp"
 
 namespace EigerC {
@@ -152,6 +153,25 @@ void EigerC::ArrayNode::Codegen(BytecodeCompiler& compiler,
         elements[i]->Codegen(compiler, ctx);
 
     compiler.AddInstruction(Opcode::MAKE_ARRAY, line, elements.size());
+}
+
+void EigerC::UnaryOpNode::Codegen(BytecodeCompiler& compiler,
+                                  CompilerContext& ctx) {
+    operand->Codegen(compiler, ctx);
+
+    switch (op) {
+        case TokenType::PLUS: break;
+        case TokenType::MINUS:
+            compiler.AddInstruction(Opcode::NEGATE, line);
+            break;
+
+        // `not`
+        case TokenType::IDENTIFIER:
+            compiler.AddInstruction(Opcode::NOT, line);
+            break;
+
+        default: break;
+    }
 }
 
 }  // namespace EigerC

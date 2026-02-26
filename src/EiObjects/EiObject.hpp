@@ -102,7 +102,14 @@ class EiObject {
 
     virtual std::shared_ptr<EiObject> operator!() const {
         throw Error(Error::Type::TYPE_ERROR,
-                    std::format("Operator `!` to object type {}",
+                    std::format("Unary `not` to object type {}",
+                                Util::ObjectDTypeToString(type)),
+                    line);
+    };
+
+    virtual std::shared_ptr<EiObject> operator-() const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Unary `not` to object type {}",
                                 Util::ObjectDTypeToString(type)),
                     line);
     };

@@ -2,7 +2,9 @@
 
 #include "ArrayObject.hpp"
 #include "FunctionObject.hpp"
+#include "Instruction.hpp"
 #include "NumberObject.hpp"
+#include "Opcode.hpp"
 
 namespace EigerC {
 
@@ -21,6 +23,11 @@ void BytecodeVM::ExecuteNextInstruction() {
         std::shared_ptr<EiObject> rhs = PopSafe(inst.sourceCodeLine);
         std::shared_ptr<EiObject> lhs = PopSafe(inst.sourceCodeLine);
         stack.push(operation(lhs, rhs));
+    };
+
+    auto UnaryOp = [&](const Instruction& inst, auto operation) {
+        std::shared_ptr<EiObject> operand = PopSafe(inst.sourceCodeLine);
+        stack.push(operation(operand));
     };
 
     CallFrame& frame = callStack.top();
@@ -196,6 +203,16 @@ void BytecodeVM::ExecuteNextInstruction() {
                               const std::shared_ptr<EiObject>& b) {
                 return *a / *b;
             });
+            break;
+
+        case Opcode::NOT:
+            UnaryOp(inst,
+                    [](const std::shared_ptr<EiObject>& a) { return !*a; });
+            break;
+
+        case Opcode::NEGATE:
+            UnaryOp(inst,
+                    [](const std::shared_ptr<EiObject>& a) { return -*a; });
             break;
 
         case Opcode::EQUAL:

@@ -5,9 +5,11 @@
 #include <string_view>
 #include <variant>
 
+#include "BoolObject.hpp"
 #include "CmdOpts.hpp"
 #include "Compiler.hpp"
 #include "Context.hpp"
+#include "EiObject.hpp"
 #include "Error.hpp"
 #include "FunctionObject.hpp"
 #include "Lexer.hpp"
@@ -19,8 +21,7 @@
 namespace EigerC {
 
 void RegisterBuiltin(CompilerContext& ctx, std::shared_ptr<Scope> globalScope,
-                     const std::string& name,
-                     std::shared_ptr<BuiltinFunctionObject> impl) {
+                     const std::string& name, std::shared_ptr<EiObject> impl) {
     int varID = ctx.GetVariableID(name);
     auto constIndex = ctx.AddConstant(std::move(impl));
     globalScope->DeclareVar(varID);
@@ -29,6 +30,12 @@ void RegisterBuiltin(CompilerContext& ctx, std::shared_ptr<Scope> globalScope,
 
 void SetupCompiler(CompilerContext& ctx, std::shared_ptr<Scope> globalScope) {
     RegisterBuiltin(ctx, globalScope, "emitln", std::make_shared<Emitln>());
+
+    RegisterBuiltin(ctx, globalScope, "true",
+                    std::make_shared<BoolObject>(-1, true));
+
+    RegisterBuiltin(ctx, globalScope, "false",
+                    std::make_shared<BoolObject>(-1, false));
 }
 
 void RunSource(const std::string& src, CompilerContext& ctx,
@@ -141,7 +148,7 @@ CmdOptions ParseFlags(int argc, char* argv[]) {
     return opts;
 }
 
-const std::string_view version = "v0.6.0";
+const std::string_view version = "v0.7.0";
 
 static void PrintInfo() {
     std::string compileDate = __DATE__;

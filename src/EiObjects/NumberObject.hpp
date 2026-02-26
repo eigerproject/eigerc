@@ -2,6 +2,7 @@
 #define _EIGERC_NUMBEROBJECT_HPP_
 
 #include <iomanip>
+#include <memory>
 #include <sstream>
 
 #include "DType.hpp"
@@ -55,6 +56,10 @@ class NumberObject : public EiObject {
         auto result = std::make_shared<NumberObject>(line);
         result->value = value / other.AsNumber();
         return result;
+    }
+
+    virtual std::shared_ptr<EiObject> operator-() const override {
+        return std::make_shared<NumberObject>(line, -value);
     }
 
     virtual std::shared_ptr<EiObject> operator==(

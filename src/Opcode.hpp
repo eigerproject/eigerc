@@ -28,6 +28,10 @@ enum class Opcode {
     MULTIPLY,
     DIVIDE,
 
+    // Arithmetic for one value on the stack
+    NOT,
+    NEGATE,
+
     // Comparisons between top two values on the stack
     EQUAL,
     NEQUAL,

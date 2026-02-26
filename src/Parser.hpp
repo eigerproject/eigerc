@@ -166,6 +166,23 @@ struct BinaryOpNode : public ASTNode {
     void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
+struct UnaryOpNode : public ASTNode {
+    TokenType op;
+    std::unique_ptr<ASTNode> operand;
+
+    UnaryOpNode(TokenType op, int opl, std::unique_ptr<ASTNode> operand)
+        : ASTNode(opl), op(op), operand(std::move(operand)) {}
+
+    void PrettyPrint(int indent = 0) const override {
+        std::string indentStr(indent, '\t');
+
+        std::cout << indentStr << Util::TokenTypeToString(op) << std::endl;
+        operand->PrettyPrint(indent + 1);
+    };
+
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
+};
+
 struct RetNode : public ASTNode {
     std::unique_ptr<ASTNode> value;
 
