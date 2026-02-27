@@ -178,6 +178,13 @@ void BytecodeVM::ExecuteNextInstruction() {
             return;
         }
 
+        case Opcode::INDEX: {
+            auto index = PopSafe(inst.sourceCodeLine);
+            auto indexable = PopSafe(inst.sourceCodeLine);
+            stack.push((*indexable)[*index]);
+            break;
+        }
+
         case Opcode::ADD:
             BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
                               const std::shared_ptr<EiObject>& b) {

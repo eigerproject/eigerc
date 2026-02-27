@@ -166,8 +166,17 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
                                 Util::TokenTypeToString(currentToken.type)),
                     currentToken.line);
     else {
-        while (currentToken.type == TokenType::LPAREN) {
-            node = ParseCall(std::move(node), line);
+        while (currentToken.type == TokenType::LPAREN ||
+               currentToken.type == TokenType::LSQRBRACE) {
+            switch (currentToken.type) {
+                case TokenType::LPAREN:
+                    node = ParseCall(std::move(node), line);
+                    break;
+                case TokenType::LSQRBRACE:
+                    node = ParseIndex(std::move(node), line);
+                    break;
+                default: break;
+            }
         }
     }
 
@@ -210,6 +219,16 @@ std::unique_ptr<ASTNode> Parser::ParseCall(
     Expect(TokenType::RPAREN);
     return std::make_unique<CallNode>(std::move(functionNode),
                                       std::move(arguments), line);
+}
+
+std::unique_ptr<ASTNode> Parser::ParseIndex(
+    std::unique_ptr<ASTNode> indexableNode, int line) {
+    Expect(TokenType::LSQRBRACE);
+    std::unique_ptr<ASTNode> indexNode = ParseExpression();
+    Expect(TokenType::RSQRBRACE);
+
+    return std::make_unique<IndexNode>(std::move(indexableNode),
+                                       std::move(indexNode), line);
 }
 
 std::unique_ptr<ASTNode> Parser::ParseRetStatement() {

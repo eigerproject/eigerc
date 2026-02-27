@@ -1,5 +1,6 @@
 #include "Compiler.hpp"
 
+#include "Context.hpp"
 #include "Error.hpp"
 #include "FunctionObject.hpp"
 #include "NumberObject.hpp"
@@ -178,6 +179,13 @@ void EigerC::UnaryOpNode::Codegen(BytecodeCompiler& compiler,
 
         default: break;
     }
+}
+
+void EigerC::IndexNode::Codegen(BytecodeCompiler& compiler,
+                                CompilerContext& ctx) {
+    indexable->Codegen(compiler, ctx);
+    index->Codegen(compiler, ctx);
+    compiler.AddInstruction(Opcode::INDEX, line);
 }
 
 }  // namespace EigerC

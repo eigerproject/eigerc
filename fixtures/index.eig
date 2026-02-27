@@ -1,0 +1,8 @@
+let arr = [1, 2, 3, 4, 5]
+
+emitln(arr)
+emitln(arr[0])
+emitln(arr[1])
+emitln(arr[2])
+emitln(arr[3])
+emitln(arr[4])

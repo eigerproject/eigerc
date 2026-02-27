@@ -30,7 +30,7 @@ class EiObject {
                     line);
     }
 
-    virtual std::shared_ptr<EiObject> operator+(const EiObject &other) const {
+    virtual std::shared_ptr<EiObject> operator+(const EiObject& other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `+` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -38,7 +38,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator-(const EiObject &other) const {
+    virtual std::shared_ptr<EiObject> operator-(const EiObject& other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `-` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -46,7 +46,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator*(const EiObject &other) const {
+    virtual std::shared_ptr<EiObject> operator*(const EiObject& other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `*` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -54,7 +54,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator/(const EiObject &other) const {
+    virtual std::shared_ptr<EiObject> operator/(const EiObject& other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `+` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -62,11 +62,11 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator==(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator==(const EiObject& other) const;
 
-    virtual std::shared_ptr<EiObject> operator!=(const EiObject &other) const;
+    virtual std::shared_ptr<EiObject> operator!=(const EiObject& other) const;
 
-    virtual std::shared_ptr<EiObject> operator<(const EiObject &other) const {
+    virtual std::shared_ptr<EiObject> operator<(const EiObject& other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `<` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -74,7 +74,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator>(const EiObject &other) const {
+    virtual std::shared_ptr<EiObject> operator>(const EiObject& other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `>` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -82,7 +82,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator<=(const EiObject &other) const {
+    virtual std::shared_ptr<EiObject> operator<=(const EiObject& other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `<=` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -90,7 +90,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator>=(const EiObject &other) const {
+    virtual std::shared_ptr<EiObject> operator>=(const EiObject& other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `>=` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -111,6 +111,14 @@ class EiObject {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Unary `not` to object type {}",
                                 Util::ObjectDTypeToString(type)),
+                    line);
+    };
+
+    virtual std::shared_ptr<EiObject> operator[](const EiObject& other) const {
+        throw Error(Error::Type::TYPE_ERROR,
+                    std::format("Object type {} is not indexable by {}",
+                                Util::ObjectDTypeToString(type),
+                                Util::ObjectDTypeToString(other.type)),
                     line);
     };
 

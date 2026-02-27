@@ -45,6 +45,8 @@ enum class Opcode {
     JUMP,           // Unconditional jump
 
     MAKE_ARRAY,  // Make array of n items in stack
+
+    INDEX,  // Index access
 };
 
 }
