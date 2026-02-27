@@ -66,7 +66,13 @@ class ArrayObject : public EiObject {
 
         if (!std::isfinite(idx) || idx != std::floor(idx))
             throw Error(Error::Type::TYPE_ERROR,
-                        "Arrays are only indexable by integer values");
+                        "Arrays are only indexable by integer values", line);
+
+        int iidx = idx;
+
+        if (iidx < 0 || iidx >= value.size())
+            throw Error(Error::Type::INDEX_ERROR, "Array index out of range",
+                        line);
 
         return value[static_cast<int>(idx)];
     }

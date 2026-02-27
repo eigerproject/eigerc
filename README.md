@@ -1,6 +1,6 @@
 <img src="artwork/eigerc-green-256.png" height="100px" />
 
-### The main implementation of the Eiger Programming Language. _`v0.7.2`_
+### The main implementation of the Eiger Programming Language. _`v0.7.3`_
 
 > [!WARNING]
 > This implementation of the language is not yet complete.\

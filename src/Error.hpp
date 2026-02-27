@@ -15,7 +15,8 @@ class Error : public std::exception {
         RUNTIME_ERROR,
         TYPE_ERROR,
         INTERNAL_ERROR,
-        MATH_ERROR
+        MATH_ERROR,
+        INDEX_ERROR,
     };
 
     Error(Type type, const std::string& message, int line = -1)

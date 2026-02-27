@@ -1,6 +1,7 @@
 #include "Util.hpp"
 
 #include "DType.hpp"
+#include "Error.hpp"
 #include "Lexer.hpp"
 #include "Opcode.hpp"
 
@@ -90,6 +91,7 @@ std::string_view ErrorTypeToString(Error::Type type) {
         case Error::Type::INTERNAL_ERROR: return "INTERNAL_ERROR";
         case Error::Type::ARG_ERROR: return "ARG_ERROR";
         case Error::Type::MATH_ERROR: return "MATH_ERROR";
+        case Error::Type::INDEX_ERROR: return "INDEX_ERROR";
         default: return "ADD_TO_STRING_CONVERSION";
     }
 }
