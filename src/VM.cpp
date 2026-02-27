@@ -133,7 +133,8 @@ void BytecodeVM::ExecuteNextInstruction() {
             currentScope = currentScope->parent;
             break;
 
-        case Opcode::CALL: {
+        case Opcode::CALL:
+        case Opcode::TAIL_CALL: {
             std::shared_ptr<EiObject> fnObj = PopSafe(inst.sourceCodeLine);
 
             if (fnObj->type != DType::FUNCTION) {
@@ -153,18 +154,18 @@ void BytecodeVM::ExecuteNextInstruction() {
             for (int i = argCount - 1; i >= 0; --i)
                 args[i] = PopSafe(inst.sourceCodeLine);
 
+            if (inst.opcode == Opcode::TAIL_CALL) PopCallFrame();
+
             if (auto builtinFn =
                     std::dynamic_pointer_cast<BuiltinFunctionObject>(fn)) {
                 auto val = builtinFn->Execute(args);
                 if (inst.flag) stack.push(val);
             } else if (auto bcFn =
                            std::dynamic_pointer_cast<BytecodeFunctionObject>(
-                               fn)) {
-                bool doTailCallOp = ip >= frame.code.size() - 1;
-                if (doTailCallOp) PopCallFrame();
+                               fn))
                 bcFn->StartExecute(args, this, inst.flag);
-                if (doTailCallOp) return;
-            }
+
+            if (inst.opcode == Opcode::TAIL_CALL) return;
 
             break;
         }

@@ -1,0 +1,12 @@
+~ Tail call test
+
+func tailCallTest(n) {
+	emitln(n)
+
+	if n <= 1
+		ret 0
+	else
+		ret tailCallTest(n - 1)
+}
+
+emitln(tailCallTest(7))

@@ -28,6 +28,10 @@ class BytecodeCompiler {
         code[ip] = Instruction(ip, opcode, operand, flag, line);
     }
 
+    Instruction& GetInstructionAt(int ip) { return code[ip]; }
+
+    Instruction& GetLastInstruction() { return code[code.size() - 1]; }
+
    private:
     std::vector<Instruction> code;
 };

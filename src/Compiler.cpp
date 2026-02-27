@@ -116,7 +116,13 @@ void CallNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
 void EigerC::RetNode::Codegen(BytecodeCompiler& compiler,
                               CompilerContext& ctx) {
     value->Codegen(compiler, ctx);
-    compiler.AddInstruction(Opcode::RETURN, line);
+
+    Instruction& i = compiler.GetLastInstruction();
+
+    if (i.opcode == Opcode::CALL)
+        i.opcode = Opcode::TAIL_CALL;
+    else
+        compiler.AddInstruction(Opcode::RETURN, line);
 }
 
 void EigerC::FunctionNode::Codegen(BytecodeCompiler& compiler,

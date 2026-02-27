@@ -60,6 +60,7 @@ std::string_view OpcodeToString(Opcode opcode) {
         case Opcode::NEW_SCOPE: return "NEW_SCOPE";
         case Opcode::END_SCOPE: return "END_SCOPE";
         case Opcode::CALL: return "CALL";
+        case Opcode::TAIL_CALL: return "TAIL_CALL";
         case Opcode::RETURN: return "RETURN";
         case Opcode::ADD: return "ADD";
         case Opcode::SUBTRACT: return "SUBTRACT";
