@@ -3,21 +3,23 @@
 #include <cstdio>
 #include <string>
 
+#if defined(_MSC_VER)
+#define popen _popen
+#define pclose _pclose
+#endif
+
 std::string runInterpreter(const std::string& file) {
-    std::string command = "./eigerc -s " + file;
+    std::string command = "eigerc -s \"" + file + "\"";
 
     FILE* pipe = popen(command.c_str(), "r");
     if (!pipe) return "";
 
     char buffer[128];
-    std::string result = "";
+    std::string result;
 
-    while (!feof(pipe)) {
-        if (fgets(buffer, 128, pipe) != NULL) result += buffer;
-    }
+    while (fgets(buffer, sizeof(buffer), pipe)) result += buffer;
 
     pclose(pipe);
-
     return result;
 }
 
