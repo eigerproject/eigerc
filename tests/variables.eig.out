@@ -4,4 +4,4 @@
 10
 100
 20
-RUNTIME_ERROR: Variable y is not defined at line 21
+RUNTIME_ERROR: Symbol y is unbound at line 21

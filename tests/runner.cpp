@@ -10,9 +10,9 @@
 
 std::string runInterpreter(const std::string& file) {
 #if defined(_WIN32)
-    std::string command = "eigerc -s \"" + file + "\"";
+    std::string command = "eigerc -s \"" + file + "\" 2>&1";
 #else
-    std::string command = "./eigerc -s \"" + file + "\"";
+    std::string command = "./eigerc -s \"" + file + "\" 2>&1";
 #endif
 
     FILE* pipe = popen(command.c_str(), "r");
