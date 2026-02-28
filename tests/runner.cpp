@@ -9,7 +9,7 @@
 #endif
 
 std::string runInterpreter(const std::string& file) {
-#if defined(_MSC_VER)
+#if defined(_WIN32)
     std::string command = "eigerc -s \"" + file + "\"";
 #else
     std::string command = "./eigerc -s \"" + file + "\"";
