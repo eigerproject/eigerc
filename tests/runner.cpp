@@ -9,7 +9,11 @@
 #endif
 
 std::string runInterpreter(const std::string& file) {
+#if defined(_MSC_VER)
     std::string command = "eigerc -s \"" + file + "\"";
+#else
+    std::string command = "./eigerc -s \"" + file + "\"";
+#endif
 
     FILE* pipe = popen(command.c_str(), "r");
     if (!pipe) return "";
