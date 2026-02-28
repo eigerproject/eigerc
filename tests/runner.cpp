@@ -48,3 +48,4 @@ std::string readFile(const std::string& file) {
     }
 
 TEST_FILE(IntegrationTests, Arithmetic, "tests/arithmetic.eig");
+TEST_FILE(IntegrationTests, Variables, "tests/variables.eig");

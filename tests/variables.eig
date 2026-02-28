@@ -1,0 +1,21 @@
+~ Variables Tests
+
+let x = 10
+emitln(x)
+
+{
+	emitln(x)
+
+	let x = 50
+	emitln(x)
+}
+emitln(x)
+
+{ x = 100 }
+emitln(x)
+
+{
+	let y = 20
+	emitln(y)
+}
+emitln(y) ~ Should error
