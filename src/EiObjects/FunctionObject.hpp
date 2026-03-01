@@ -8,6 +8,7 @@
 #include "EiObject.hpp"
 #include "Instruction.hpp"
 #include "Scope.hpp"
+#include "StringObject.hpp"
 #include "VM.hpp"
 
 namespace EigerC {
@@ -38,7 +39,7 @@ class BuiltinFunctionObject : public FunctionObject {
     }
 
     virtual std::shared_ptr<EiObject> Execute(
-        const std::vector<std::shared_ptr<EiObject>>& values) = 0;
+        const std::vector<std::shared_ptr<EiObject>> &values) = 0;
 
     std::string AsString() const override {
         return std::format("<built-in function {}>", name);
@@ -49,20 +50,37 @@ class Emitln : public BuiltinFunctionObject {
    public:
     Emitln() : BuiltinFunctionObject("emitln", {"value"}) {}
     std::shared_ptr<EiObject> Execute(
-        const std::vector<std::shared_ptr<EiObject>>& values) override {
+        const std::vector<std::shared_ptr<EiObject>> &values) override {
         std::cout << values[0]->AsString() << std::endl;
         return std::make_shared<NixObject>();
     }
 };
 
+class Str : public BuiltinFunctionObject {
+   public:
+    Str(std::shared_ptr<EiObject> obj)
+        : obj(obj), BuiltinFunctionObject("str", {}) {}
+
+    std::shared_ptr<EiObject> Execute(
+        const std::vector<std::shared_ptr<EiObject>> &values) override {
+        if (!convertedObj)
+            convertedObj =
+                std::make_shared<StringObject>(line, obj->AsString());
+
+        return convertedObj;
+    }
+
+    std::shared_ptr<EiObject> obj, convertedObj;
+};
+
 class BytecodeFunctionObject : public FunctionObject {
    public:
-    BytecodeFunctionObject(int line, CompilerContext& ctx, std::string name,
+    BytecodeFunctionObject(int line, CompilerContext &ctx, std::string name,
                            std::vector<std::string> argNames,
                            std::vector<Instruction> code, bool isInline);
 
-    void StartExecute(const std::vector<std::shared_ptr<EiObject>>& values,
-                      BytecodeVM* vm, bool pushRetVal);
+    void StartExecute(const std::vector<std::shared_ptr<EiObject>> &values,
+                      BytecodeVM *vm, bool pushRetVal);
 
     std::string AsString() const override {
         std::string_view funcType = isInline ? "inline function" : "function";
@@ -73,13 +91,13 @@ class BytecodeFunctionObject : public FunctionObject {
     }
 
     void SetClosure(std::shared_ptr<Scope> closure) { this->closure = closure; }
-    const std::shared_ptr<Scope>& GetClosure() const { return closure; }
+    const std::shared_ptr<Scope> &GetClosure() const { return closure; }
 
    private:
     std::shared_ptr<Scope> closure;
     int isInline = false;
     std::vector<Instruction> code;
-    CompilerContext& ctx;
+    CompilerContext &ctx;
 };
 
 }  // namespace EigerC

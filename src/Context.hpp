@@ -20,8 +20,12 @@ class CompilerContext {
     std::string GetVarName(int id) const;
 
    public:
+    enum class HardcodedSymbols { str = 0 };
+
     std::unordered_map<int, std::shared_ptr<EiObject>> constantsTable;
-    std::unordered_map<std::string, int> symbolTable;
+    std::unordered_map<std::string, int> symbolTable{
+        {"str", (int)HardcodedSymbols::str}};
+
     const CmdOptions &cmdOpts;
 };
 
