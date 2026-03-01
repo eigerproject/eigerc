@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "Context.hpp"
 #include "DType.hpp"
 #include "Error.hpp"
 #include "Util.hpp"
@@ -30,7 +31,16 @@ class EiObject {
                     line);
     }
 
-    virtual std::shared_ptr<EiObject> operator+(const EiObject& other) const {
+    virtual std::shared_ptr<EiObject> Attr(int attrId,
+                                           CompilerContext &ctx) const {
+        throw Error(Error::Type::ATTR_ERROR,
+                    std::format("{} has no attribute {}",
+                                Util::ObjectDTypeToString(type),
+                                ctx.GetVarName(attrId)),
+                    line);
+    }
+
+    virtual std::shared_ptr<EiObject> operator+(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `+` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -38,7 +48,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator-(const EiObject& other) const {
+    virtual std::shared_ptr<EiObject> operator-(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `-` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -46,7 +56,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator*(const EiObject& other) const {
+    virtual std::shared_ptr<EiObject> operator*(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `*` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -54,7 +64,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator/(const EiObject& other) const {
+    virtual std::shared_ptr<EiObject> operator/(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `+` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -62,11 +72,11 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator==(const EiObject& other) const;
+    virtual std::shared_ptr<EiObject> operator==(const EiObject &other) const;
 
-    virtual std::shared_ptr<EiObject> operator!=(const EiObject& other) const;
+    virtual std::shared_ptr<EiObject> operator!=(const EiObject &other) const;
 
-    virtual std::shared_ptr<EiObject> operator<(const EiObject& other) const {
+    virtual std::shared_ptr<EiObject> operator<(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `<` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -74,7 +84,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator>(const EiObject& other) const {
+    virtual std::shared_ptr<EiObject> operator>(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `>` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -82,7 +92,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator<=(const EiObject& other) const {
+    virtual std::shared_ptr<EiObject> operator<=(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `<=` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -90,7 +100,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator>=(const EiObject& other) const {
+    virtual std::shared_ptr<EiObject> operator>=(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Operator `>=` to object types {} and {}",
                                 Util::ObjectDTypeToString(type),
@@ -114,7 +124,7 @@ class EiObject {
                     line);
     };
 
-    virtual std::shared_ptr<EiObject> operator[](const EiObject& other) const {
+    virtual std::shared_ptr<EiObject> operator[](const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
                     std::format("Object type {} is not indexable by {}",
                                 Util::ObjectDTypeToString(type),

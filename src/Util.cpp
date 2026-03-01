@@ -93,6 +93,7 @@ std::string_view ErrorTypeToString(Error::Type type) {
         case Error::Type::ARG_ERROR: return "ARG_ERROR";
         case Error::Type::MATH_ERROR: return "MATH_ERROR";
         case Error::Type::INDEX_ERROR: return "INDEX_ERROR";
+        case Error::Type::ATTR_ERROR: return "ATTR_ERROR";
         default: return "ADD_TO_STRING_CONVERSION";
     }
 }

@@ -19,20 +19,20 @@ void BytecodeVM::ExecuteNextInstruction() {
         return val;
     };
 
-    auto BinaryOp = [&](const Instruction& inst, auto operation) {
+    auto BinaryOp = [&](const Instruction &inst, auto operation) {
         std::shared_ptr<EiObject> rhs = PopSafe(inst.sourceCodeLine);
         std::shared_ptr<EiObject> lhs = PopSafe(inst.sourceCodeLine);
         stack.push(operation(lhs, rhs));
     };
 
-    auto UnaryOp = [&](const Instruction& inst, auto operation) {
+    auto UnaryOp = [&](const Instruction &inst, auto operation) {
         std::shared_ptr<EiObject> operand = PopSafe(inst.sourceCodeLine);
         stack.push(operation(operand));
     };
 
-    CallFrame& frame = callStack.top();
-    auto& currentScope = frame.scope;
-    size_t& ip = frame.ip;
+    CallFrame &frame = callStack.top();
+    auto &currentScope = frame.scope;
+    size_t &ip = frame.ip;
     bool pushReturnValue = frame.pushReturnValue;
 
     if (ip >= frame.code.size()) {
@@ -41,7 +41,7 @@ void BytecodeVM::ExecuteNextInstruction() {
         return;
     }
 
-    const Instruction& inst = frame.code[frame.ip];
+    const Instruction &inst = frame.code[frame.ip];
 
     switch (inst.opcode) {
         case Opcode::NO_OP: break;
@@ -61,7 +61,7 @@ void BytecodeVM::ExecuteNextInstruction() {
             break;
 
         case Opcode::LOAD_FUNC: {
-            const auto& constant =
+            const auto &constant =
                 ctx.constantsTable[static_cast<int>(inst.operand)];
 
             if (constant->type != DType::FUNCTION) {
@@ -185,82 +185,88 @@ void BytecodeVM::ExecuteNextInstruction() {
             break;
         }
 
+        case Opcode::ATTR: {
+            auto object = PopSafe(inst.sourceCodeLine);
+            stack.push((*object).Attr(inst.operand, ctx));
+            break;
+        }
+
         case Opcode::ADD:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a + *b;
             });
             break;
 
         case Opcode::SUBTRACT:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a - *b;
             });
             break;
 
         case Opcode::MULTIPLY:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a * *b;
             });
             break;
 
         case Opcode::DIVIDE:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a / *b;
             });
             break;
 
         case Opcode::NOT:
             UnaryOp(inst,
-                    [](const std::shared_ptr<EiObject>& a) { return !*a; });
+                    [](const std::shared_ptr<EiObject> &a) { return !*a; });
             break;
 
         case Opcode::NEGATE:
             UnaryOp(inst,
-                    [](const std::shared_ptr<EiObject>& a) { return -*a; });
+                    [](const std::shared_ptr<EiObject> &a) { return -*a; });
             break;
 
         case Opcode::EQUAL:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a == *b;
             });
             break;
 
         case Opcode::NEQUAL:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a != *b;
             });
             break;
 
         case Opcode::GREATER:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a > *b;
             });
             break;
 
         case Opcode::GREATEREQ:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a >= *b;
             });
             break;
 
         case Opcode::LESS:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a < *b;
             });
             break;
 
         case Opcode::LESSEQ:
-            BinaryOp(inst, [](const std::shared_ptr<EiObject>& a,
-                              const std::shared_ptr<EiObject>& b) {
+            BinaryOp(inst, [](const std::shared_ptr<EiObject> &a,
+                              const std::shared_ptr<EiObject> &b) {
                 return *a <= *b;
             });
             break;

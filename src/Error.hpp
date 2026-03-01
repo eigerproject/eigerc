@@ -17,13 +17,14 @@ class Error : public std::exception {
         INTERNAL_ERROR,
         MATH_ERROR,
         INDEX_ERROR,
+        ATTR_ERROR,
     };
 
-    Error(Type type, const std::string& message, int line = -1)
+    Error(Type type, const std::string &message, int line = -1)
         : type(type), message(message), line(line) {}
 
     [[nodiscard]] Type GetType() const { return type; }
-    [[nodiscard]] const std::string& GetMessage() const { return message; }
+    [[nodiscard]] const std::string &GetMessage() const { return message; }
     [[nodiscard]] int GetLine() const { return line; }
 
    private:
