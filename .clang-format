@@ -6,3 +6,5 @@ AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Inline
 BreakBeforeBraces: Attach
+DerivePointerAlignment: false
+PointerAlignment: Right
