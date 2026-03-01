@@ -25,12 +25,12 @@ struct Instruction {
           flag(flag) {}
 
     void PrettyPrint() const {
-        std::cout << std::format("{:05} {:<12} {:<10} {:<5}\n", address,
+        std::cout << std::format("{:05} {:<24} {:<10} {:<5}\n", address,
                                  Util::OpcodeToString(opcode), operand, flag);
     }
 
     static void PrettyPrintHeader() {
-        std::cout << std::format("{:<5} {:<12} {:<10} {:<5}\n", "Addr",
+        std::cout << std::format("{:<5} {:<24} {:<10} {:<5}\n", "Addr",
                                  "Opcode", "Operand", "Flag");
     }
 };
