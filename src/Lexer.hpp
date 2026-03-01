@@ -28,7 +28,8 @@ enum class TokenType {
     LBRACE,
     RBRACE,
     LSQRBRACE,
-    RSQRBRACE
+    RSQRBRACE,
+    DOT
 };
 
 struct Token {

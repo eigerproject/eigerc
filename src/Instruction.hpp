@@ -1,6 +1,7 @@
 #ifndef _EIGERC_BYTECODE_HPP_
 #define _EIGERC_BYTECODE_HPP_
 
+#include <format>
 #include <iomanip>
 #include <iostream>
 
@@ -24,9 +25,13 @@ struct Instruction {
           flag(flag) {}
 
     void PrettyPrint() const {
-        std::cout << std::setfill('0') << std::setw(5) << address << '\t';
-        std::cout << Util::OpcodeToString(opcode) << '\t' << operand << '\t'
-                  << flag << std::endl;
+        std::cout << std::format("{:05} {:<12} {:<10} {:<5}\n", address,
+                                 Util::OpcodeToString(opcode), operand, flag);
+    }
+
+    static void PrettyPrintHeader() {
+        std::cout << std::format("{:<5} {:<12} {:<10} {:<5}\n", "Addr",
+                                 "Opcode", "Operand", "Flag");
     }
 };
 

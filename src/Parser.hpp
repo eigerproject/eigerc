@@ -254,6 +254,22 @@ struct IndexNode : public ASTNode {
     void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
 };
 
+struct AttrNode : public ASTNode {
+    std::unique_ptr<ASTNode> object;
+    std::string attr;
+
+    AttrNode(std::unique_ptr<ASTNode> object, std::string attr, int line)
+        : object(std::move(object)), attr(attr), ASTNode(line) {}
+
+    void PrettyPrint(int indent = 0) const override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << "ATTR " << attr << std::endl;
+        object->PrettyPrint(indent + 1);
+    }
+
+    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+};
+
 class Parser {
    public:
     Parser(Lexer& lexer) : lexer(lexer), currentToken(TokenType::UNKNOWN, -1) {
@@ -272,6 +288,8 @@ class Parser {
                                        int line);
     std::unique_ptr<ASTNode> ParseIndex(std::unique_ptr<ASTNode> indexableNode,
                                         int line);
+    std::unique_ptr<ASTNode> ParseAttr(std::unique_ptr<ASTNode> objNode,
+                                       int line);
 
     std::unique_ptr<ASTNode> ParseArray();
 

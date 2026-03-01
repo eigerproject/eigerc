@@ -1,6 +1,7 @@
 #include "Parser.hpp"
 
 #include <algorithm>
+#include <memory>
 
 #include "Error.hpp"
 #include "Lexer.hpp"
@@ -167,13 +168,17 @@ std::unique_ptr<ASTNode> Parser::ParsePrimary() {
                     currentToken.line);
     else {
         while (currentToken.type == TokenType::LPAREN ||
-               currentToken.type == TokenType::LSQRBRACE) {
+               currentToken.type == TokenType::LSQRBRACE ||
+               currentToken.type == TokenType::DOT) {
             switch (currentToken.type) {
                 case TokenType::LPAREN:
                     node = ParseCall(std::move(node), line);
                     break;
                 case TokenType::LSQRBRACE:
                     node = ParseIndex(std::move(node), line);
+                    break;
+                case TokenType::DOT:
+                    node = ParseAttr(std::move(node), line);
                     break;
                 default: break;
             }
@@ -229,6 +234,15 @@ std::unique_ptr<ASTNode> Parser::ParseIndex(
 
     return std::make_unique<IndexNode>(std::move(indexableNode),
                                        std::move(indexNode), line);
+}
+
+std::unique_ptr<ASTNode> Parser::ParseAttr(std::unique_ptr<ASTNode> objNode,
+                                           int line) {
+    Expect(TokenType::DOT);
+    std::string attrName = currentToken.lexeme;
+    Expect(TokenType::IDENTIFIER);
+
+    return std::make_unique<AttrNode>(std::move(objNode), attrName, line);
 }
 
 std::unique_ptr<ASTNode> Parser::ParseRetStatement() {

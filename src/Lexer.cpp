@@ -117,6 +117,7 @@ Token Lexer::GetNextToken() {
             case '}': Advance(); return {TokenType::RBRACE, line};
             case '[': Advance(); return {TokenType::LSQRBRACE, line};
             case ']': Advance(); return {TokenType::RSQRBRACE, line};
+            case '.': Advance(); return {TokenType::DOT, line};
             case '=': {
                 Advance();
                 return {TokenType::ASSIGN, line};

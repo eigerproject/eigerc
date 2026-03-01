@@ -188,4 +188,10 @@ void EigerC::IndexNode::Codegen(BytecodeCompiler& compiler,
     compiler.AddInstruction(Opcode::INDEX, line);
 }
 
+void EigerC::AttrNode::Codegen(BytecodeCompiler& compiler,
+                               CompilerContext& ctx) {
+    object->Codegen(compiler, ctx);
+    compiler.AddInstruction(Opcode::ATTR, line, ctx.GetVariableID(attr));
+}
+
 }  // namespace EigerC
