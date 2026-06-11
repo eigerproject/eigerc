@@ -2,7 +2,6 @@
 #define _EIGERC_BYTECODE_HPP_
 
 #include <format>
-#include <iomanip>
 #include <iostream>
 
 #include "Opcode.hpp"

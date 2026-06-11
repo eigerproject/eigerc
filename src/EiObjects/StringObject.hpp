@@ -2,7 +2,6 @@
 #define _EIGERC_STRINGOBJECT_HPP_
 
 #include "EiObject.hpp"
-#include "Error.hpp"
 
 namespace EigerC {
 

@@ -25,7 +25,7 @@ struct ASTNode {
 
     virtual void PrettyPrint(int indent = 0) const = 0;
 
-    virtual void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) = 0;
+    virtual void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) = 0;
 };
 
 struct ScopeNode : public ASTNode {
@@ -36,10 +36,10 @@ struct ScopeNode : public ASTNode {
     void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "SCOPE" << std::endl;
-        for (const auto& stmt : statements) stmt->PrettyPrint(indent + 1);
+        for (const auto &stmt : statements) stmt->PrettyPrint(indent + 1);
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct IfNode : public ASTNode {
@@ -62,7 +62,7 @@ struct IfNode : public ASTNode {
         if (elseBlock) elseBlock->PrettyPrint(indent + 1);
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct FunctionNode : public ASTNode {
@@ -82,12 +82,12 @@ struct FunctionNode : public ASTNode {
     void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "FUNCTION " << functionName << "( ";
-        for (const auto& param : parameters) std::cout << param << " ";
+        for (const auto &param : parameters) std::cout << param << " ";
         std::cout << ")" << std::endl;
         if (body) body->PrettyPrint(indent + 1);
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct LetNode : public ASTNode {
@@ -104,7 +104,7 @@ struct LetNode : public ASTNode {
         if (value) value->PrettyPrint(indent + 1);
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct NumberNode : public ASTNode {
@@ -116,7 +116,7 @@ struct NumberNode : public ASTNode {
         std::cout << indentStr << value << std::endl;
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct StringNode : public ASTNode {
@@ -128,7 +128,7 @@ struct StringNode : public ASTNode {
         std::cout << indentStr << "\"" << value << "\"" << std::endl;
     };
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct VariableNode : public ASTNode {
@@ -141,7 +141,7 @@ struct VariableNode : public ASTNode {
         std::cout << indentStr << name << std::endl;
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct BinaryOpNode : public ASTNode {
@@ -164,7 +164,7 @@ struct BinaryOpNode : public ASTNode {
         if (right) right->PrettyPrint(indent + 1);
     };
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct UnaryOpNode : public ASTNode {
@@ -181,7 +181,7 @@ struct UnaryOpNode : public ASTNode {
         operand->PrettyPrint(indent + 1);
     };
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct RetNode : public ASTNode {
@@ -196,7 +196,7 @@ struct RetNode : public ASTNode {
         value->PrettyPrint(indent + 1);
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct CallNode : public ASTNode {
@@ -214,10 +214,10 @@ struct CallNode : public ASTNode {
         std::cout << indentStr << "CALL" << std::endl;
         functionNode->PrettyPrint(indent + 1);
         std::cout << indentStr << "ARGS" << std::endl;
-        for (const auto& arg : arguments) { arg->PrettyPrint(indent + 1); }
+        for (const auto &arg : arguments) { arg->PrettyPrint(indent + 1); }
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct ArrayNode : public ASTNode {
@@ -228,10 +228,10 @@ struct ArrayNode : public ASTNode {
     void PrettyPrint(int indent = 0) const override {
         std::string indentStr(indent, '\t');
         std::cout << indentStr << "ARR" << std::endl;
-        for (const auto& el : elements) { el->PrettyPrint(indent + 1); }
+        for (const auto &el : elements) { el->PrettyPrint(indent + 1); }
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct IndexNode : public ASTNode {
@@ -251,7 +251,7 @@ struct IndexNode : public ASTNode {
         index->PrettyPrint(indent + 1);
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 struct AttrNode : public ASTNode {
@@ -267,12 +267,12 @@ struct AttrNode : public ASTNode {
         object->PrettyPrint(indent + 1);
     }
 
-    void Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) override;
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
 class Parser {
    public:
-    Parser(Lexer& lexer) : lexer(lexer), currentToken(TokenType::UNKNOWN, -1) {
+    Parser(Lexer &lexer) : lexer(lexer), currentToken(TokenType::UNKNOWN, -1) {
         Advance();
     }
 
@@ -307,7 +307,7 @@ class Parser {
     static int GetPrecedence(TokenType type);
 
    private:
-    Lexer& lexer;
+    Lexer &lexer;
     Token currentToken;
 };
 

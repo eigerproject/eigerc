@@ -38,6 +38,8 @@ add_executable(eigerc
     src/VM.hpp
     src/CmdOpts.hpp
 
+    src/EiObjects/BuiltinFunctions.hpp
+
     src/EiObjects/EiObject.cpp
     src/EiObjects/NumberObject.cpp
     src/EiObjects/StringObject.cpp

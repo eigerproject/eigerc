@@ -2,6 +2,7 @@
 #define _EIGERC_EIOBJECT_HPP_
 
 #include <format>
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -12,7 +13,22 @@
 
 namespace EigerC {
 
+using AttrFactory =
+    std::function<std::shared_ptr<EiObject>(std::shared_ptr<EiObject>)>;
+
 class EiObject : public std::enable_shared_from_this<EiObject> {
+   protected:
+    static const std::unordered_map<int, AttrFactory> &BaseAttrTable();
+
+    virtual const std::unordered_map<int, AttrFactory> &GetAttrTable() const {
+        static const auto table = []() {
+            using HS = CompilerContext::HardcodedSymbols;
+            auto t = EiObject::BaseAttrTable();
+            return t;
+        }();
+        return table;
+    }
+
    public:
     EiObject() = default;
     virtual ~EiObject() = default;
@@ -31,8 +47,7 @@ class EiObject : public std::enable_shared_from_this<EiObject> {
                     line);
     }
 
-    virtual std::shared_ptr<EiObject> Attr(int attrId,
-                                           CompilerContext &ctx) const;
+    virtual std::shared_ptr<EiObject> Attr(int attrId, CompilerContext &ctx);
 
     virtual std::shared_ptr<EiObject> operator+(const EiObject &other) const {
         throw Error(Error::Type::TYPE_ERROR,
@@ -128,6 +143,8 @@ class EiObject : public std::enable_shared_from_this<EiObject> {
 
     int line = -1;
     DType type = DType::UNKNOWN;
+
+    std::unordered_map<int, std::shared_ptr<EiObject>> attributes;
 };
 
 class NixObject : public EiObject {

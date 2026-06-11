@@ -8,7 +8,6 @@
 #include "EiObject.hpp"
 #include "Instruction.hpp"
 #include "Scope.hpp"
-#include "StringObject.hpp"
 #include "VM.hpp"
 
 namespace EigerC {
@@ -54,23 +53,6 @@ class Emitln : public BuiltinFunctionObject {
         std::cout << values[0]->AsString() << std::endl;
         return std::make_shared<NixObject>();
     }
-};
-
-class Str : public BuiltinFunctionObject {
-   public:
-    Str(std::shared_ptr<EiObject> obj)
-        : obj(obj), BuiltinFunctionObject("str", {}) {}
-
-    std::shared_ptr<EiObject> Execute(
-        const std::vector<std::shared_ptr<EiObject>> &values) override {
-        if (!convertedObj)
-            convertedObj =
-                std::make_shared<StringObject>(line, obj->AsString());
-
-        return convertedObj;
-    }
-
-    std::shared_ptr<EiObject> obj, convertedObj;
 };
 
 class BytecodeFunctionObject : public FunctionObject {
