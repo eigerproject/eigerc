@@ -64,6 +64,8 @@ std::unique_ptr<ASTNode> Parser::ParseStatement() {
             return ParseLetStatement();
         else if (currentToken.lexeme == "if")
             return ParseIfStatement();
+        else if (currentToken.lexeme == "while")
+            return ParseWhileStatement();
         else if (currentToken.lexeme == "ret")
             return ParseRetStatement();
     }
@@ -282,6 +284,30 @@ std::unique_ptr<ASTNode> Parser::ParseIfStatement() {
     auto result =
         std::make_unique<IfNode>(std::move(condition), std::move(ifBlock),
                                  currentToken.line, std::move(elseBlock));
+    result->isAsStatement = true;
+    return result;
+}
+
+std::unique_ptr<ASTNode> Parser::ParseWhileStatement() {
+    Advance();
+    auto condition = ParseExpression();
+
+    if (!condition) {
+        throw Error(Error::Type::SYNTAX_ERROR,
+                    "Expected expression after while", currentToken.line);
+    }
+
+    auto body = ParseStatement();
+
+    if (!body) {
+        throw Error(Error::Type::SYNTAX_ERROR,
+                    "Expected statement after expression in while",
+                    currentToken.line);
+    }
+
+    auto result = std::make_unique<WhileNode>(
+        std::move(condition), std::move(body), currentToken.line);
+
     result->isAsStatement = true;
     return result;
 }

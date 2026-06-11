@@ -63,6 +63,23 @@ struct IfNode : public ASTNode {
     void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
 };
 
+struct WhileNode : public ASTNode {
+    std::unique_ptr<ASTNode> condition;
+    std::unique_ptr<ASTNode> body;
+
+    WhileNode(std::unique_ptr<ASTNode> c, std::unique_ptr<ASTNode> b, int line)
+        : condition(std::move(c)), body(std::move(b)), ASTNode(line) {}
+
+    void PrettyPrint(int indent = 0) const override {
+        std::string indentStr(indent, '\t');
+        std::cout << indentStr << "WHILE" << std::endl;
+        condition->PrettyPrint(indent + 1);
+        body->PrettyPrint(indent + 1);
+    }
+
+    void Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) override;
+};
+
 struct FunctionNode : public ASTNode {
     std::string functionName;
     std::vector<std::string> parameters;
@@ -296,6 +313,7 @@ class Parser {
 
     std::unique_ptr<ASTNode> ParseLetStatement();
     std::unique_ptr<ASTNode> ParseIfStatement();
+    std::unique_ptr<ASTNode> ParseWhileStatement();
     std::unique_ptr<ASTNode> ParseRetStatement();
 
     std::unique_ptr<ASTNode> ParseFunction();

@@ -49,6 +49,23 @@ void EigerC::IfNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     }
 }
 
+void EigerC::WhileNode::Codegen(BytecodeCompiler &compiler,
+                                CompilerContext &ctx) {
+    int startPtr = compiler.GetInstructionPointer();
+    condition->Codegen(compiler, ctx);
+
+    int jumpIfFalse = compiler.GetInstructionPointer();
+    compiler.AddInstruction(Opcode::NO_OP, line);
+
+    body->Codegen(compiler, ctx);
+
+    compiler.AddInstruction(Opcode::JUMP, line, startPtr);
+
+    int here = compiler.GetInstructionPointer();
+
+    compiler.SetInstructionAt(jumpIfFalse, Opcode::JUMP_IF_FALSE, line, here);
+}
+
 void NumberNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     compiler.AddInstruction(Opcode::LOAD_IMM, line, value);
 }
