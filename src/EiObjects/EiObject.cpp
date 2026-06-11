@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "BoolObject.hpp"
-#include "BuiltinFunctions.h"
+#include "BuiltinFunctions.hpp"
 #include "Context.hpp"
 
 namespace EigerC {

@@ -45,16 +45,6 @@ class BuiltinFunctionObject : public FunctionObject {
     }
 };
 
-class Emitln : public BuiltinFunctionObject {
-   public:
-    Emitln() : BuiltinFunctionObject("emitln", {"value"}) {}
-    std::shared_ptr<EiObject> Execute(
-        const std::vector<std::shared_ptr<EiObject>> &values) override {
-        std::cout << values[0]->AsString() << std::endl;
-        return std::make_shared<NixObject>();
-    }
-};
-
 class BytecodeFunctionObject : public FunctionObject {
    public:
     BytecodeFunctionObject(int line, CompilerContext &ctx, std::string name,

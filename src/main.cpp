@@ -6,12 +6,12 @@
 #include <variant>
 
 #include "BoolObject.hpp"
+#include "BuiltinFunctions.hpp"
 #include "CmdOpts.hpp"
 #include "Compiler.hpp"
 #include "Context.hpp"
 #include "EiObject.hpp"
 #include "Error.hpp"
-#include "FunctionObject.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Scope.hpp"

@@ -51,6 +51,7 @@ add_executable(eigerc
     src/EiObjects/NumberObject.hpp
     src/EiObjects/StringObject.hpp
     src/EiObjects/ArrayObject.hpp
+    src/EiObjects/ArrayObject.cpp
 )
 
 add_executable(eigertest tests/runner.cpp)
