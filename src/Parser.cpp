@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 
+#include <format>
 #include <memory>
 
 #include "Error.hpp"

@@ -3,7 +3,6 @@
 #include "Context.hpp"
 #include "Error.hpp"
 #include "FunctionObject.hpp"
-#include "NumberObject.hpp"
 #include "Opcode.hpp"
 #include "Parser.hpp"
 #include "StringObject.hpp"

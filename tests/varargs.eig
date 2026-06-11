@@ -1,0 +1,7 @@
+func myvarfunc(a, b, +c) {
+	emitln(a, b, c)
+}
+
+myvarfunc(1, 2)
+myvarfunc(1, 2, 3, 4)
+myvarfunc(1, 2, 3, 4, 5, 6)
