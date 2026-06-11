@@ -36,6 +36,8 @@ void SetupCompiler(CompilerContext &ctx, std::shared_ptr<Scope> globalScope) {
 
     RegisterBuiltin(ctx, globalScope, "false",
                     std::make_shared<BoolObject>(-1, false));
+
+    RegisterBuiltin(ctx, globalScope, "nix", std::make_shared<NixObject>());
 }
 
 void RunSource(const std::string &src, CompilerContext &ctx,

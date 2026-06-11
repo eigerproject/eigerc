@@ -1,0 +1,20 @@
+emitln([1, 2, 3])
+emitln([[1, 2], [[3, 4], 5]])
+emitln([])
+
+let name = "Kane"
+let age = 20
+
+let message = "Name: " + name + ", age: " + age.str()
+
+emitln(message)
+
+let value
+
+if value ?= nix
+    emitln("`value` is undefined")
+else
+    emitln("`value` is defined")
+
+let data = [1, nix, "example", nix]
+let mixed_array = [1, 2.5, "example", true, nix]
