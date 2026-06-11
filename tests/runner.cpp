@@ -8,14 +8,14 @@
 #define pclose _pclose
 #endif
 
-std::string runInterpreter(const std::string& file) {
+std::string runInterpreter(const std::string &file) {
 #if defined(_WIN32)
     std::string command = "eigerc -s \"" + file + "\" 2>&1";
 #else
     std::string command = "./eigerc -s \"" + file + "\" 2>&1";
 #endif
 
-    FILE* pipe = popen(command.c_str(), "r");
+    FILE *pipe = popen(command.c_str(), "r");
     if (!pipe) return "";
 
     char buffer[128];
@@ -27,9 +27,9 @@ std::string runInterpreter(const std::string& file) {
     return result;
 }
 
-std::string readFile(const std::string& file) {
+std::string readFile(const std::string &file) {
     std::string content = "";
-    FILE* filePtr = fopen(file.c_str(), "r");
+    FILE *filePtr = fopen(file.c_str(), "r");
     if (!filePtr) return content;
 
     char buffer[128];
@@ -49,3 +49,4 @@ std::string readFile(const std::string& file) {
 
 TEST_FILE(IntegrationTests, Arithmetic, "tests/arithmetic.eig");
 TEST_FILE(IntegrationTests, Variables, "tests/variables.eig");
+TEST_FILE(IntegrationTests, Conditionals, "tests/conditionals.eig");

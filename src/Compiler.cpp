@@ -10,13 +10,13 @@
 
 namespace EigerC {
 
-void ScopeNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
+void ScopeNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     compiler.AddInstruction(Opcode::NEW_SCOPE, line);
-    for (const auto& stmt : statements) stmt->Codegen(compiler, ctx);
+    for (const auto &stmt : statements) stmt->Codegen(compiler, ctx);
     compiler.AddInstruction(Opcode::END_SCOPE, line);
 }
 
-void LetNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
+void LetNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     compiler.AddInstruction(Opcode::DECL_VAR, line,
                             ctx.GetVariableID(variableName));
     if (value) {
@@ -26,7 +26,8 @@ void LetNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
     }
 }
 
-void EigerC::IfNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
+void EigerC::IfNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
+    int elseIp;
     condition->Codegen(compiler, ctx);
 
     int ip = compiler.GetInstructionPointer();
@@ -34,34 +35,36 @@ void EigerC::IfNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
 
     ifBlock->Codegen(compiler, ctx);
 
-    int elseIp = compiler.GetInstructionPointer();
+    if (elseBlock) {
+        elseIp = compiler.GetInstructionPointer();
+        compiler.AddInstruction(Opcode::NO_OP, line);
+    }
 
     compiler.SetInstructionAt(ip, Opcode::JUMP_IF_FALSE, line,
                               compiler.GetInstructionPointer());
 
     if (elseBlock) {
-        compiler.AddInstruction(Opcode::NO_OP, line);
         elseBlock->Codegen(compiler, ctx);
         compiler.SetInstructionAt(elseIp, Opcode::JUMP, line,
                                   compiler.GetInstructionPointer());
     }
 }
 
-void NumberNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
+void NumberNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     compiler.AddInstruction(Opcode::LOAD_IMM, line, value);
 }
 
-void VariableNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
+void VariableNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     compiler.AddInstruction(Opcode::LOAD_VAR, line, ctx.GetVariableID(name));
 }
 
-void StringNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
+void StringNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     compiler.AddInstruction(
         Opcode::LOAD_CONST, line,
         ctx.AddConstant(std::make_shared<StringObject>(line, value)));
 }
 
-void BinaryOpNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
+void BinaryOpNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
     if (op != TokenType::ASSIGN) left->Codegen(compiler, ctx);
     right->Codegen(compiler, ctx);
 
@@ -98,7 +101,7 @@ void BinaryOpNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
             compiler.AddInstruction(
                 c, line,
                 ctx.GetVariableID(
-                    static_cast<VariableNode*>(left.get())->name));
+                    static_cast<VariableNode *>(left.get())->name));
             break;
         }
         default:
@@ -107,18 +110,18 @@ void BinaryOpNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
     }
 }
 
-void CallNode::Codegen(BytecodeCompiler& compiler, CompilerContext& ctx) {
-    for (const auto& arg : arguments) arg->Codegen(compiler, ctx);
+void CallNode::Codegen(BytecodeCompiler &compiler, CompilerContext &ctx) {
+    for (const auto &arg : arguments) arg->Codegen(compiler, ctx);
     functionNode->Codegen(compiler, ctx);
     compiler.AddInstruction(Opcode::CALL, line, arguments.size(),
                             !isAsStatement);
 }
 
-void EigerC::RetNode::Codegen(BytecodeCompiler& compiler,
-                              CompilerContext& ctx) {
+void EigerC::RetNode::Codegen(BytecodeCompiler &compiler,
+                              CompilerContext &ctx) {
     value->Codegen(compiler, ctx);
 
-    Instruction& i = compiler.GetLastInstruction();
+    Instruction &i = compiler.GetLastInstruction();
 
     if (i.opcode == Opcode::CALL)
         i.opcode = Opcode::TAIL_CALL;
@@ -126,19 +129,19 @@ void EigerC::RetNode::Codegen(BytecodeCompiler& compiler,
         compiler.AddInstruction(Opcode::RETURN, line);
 }
 
-void EigerC::FunctionNode::Codegen(BytecodeCompiler& compiler,
-                                   CompilerContext& ctx) {
+void EigerC::FunctionNode::Codegen(BytecodeCompiler &compiler,
+                                   CompilerContext &ctx) {
     BytecodeCompiler newCompiler;
     body->Codegen(newCompiler, ctx);
 
-    auto& code = newCompiler.GetInstructions();
+    auto &code = newCompiler.GetInstructions();
 
     if (!isExpression && !code.empty() && code[0].opcode == Opcode::NEW_SCOPE &&
         code[code.size() - 1].opcode == Opcode::END_SCOPE) {
         code.pop_back();
         code.erase(code.begin());
 
-        for (Instruction& inst : code) --inst.address;
+        for (Instruction &inst : code) --inst.address;
     } else
         newCompiler.AddInstruction(Opcode::RETURN, -1);
 
@@ -154,16 +157,16 @@ void EigerC::FunctionNode::Codegen(BytecodeCompiler& compiler,
     }
 }
 
-void EigerC::ArrayNode::Codegen(BytecodeCompiler& compiler,
-                                CompilerContext& ctx) {
+void EigerC::ArrayNode::Codegen(BytecodeCompiler &compiler,
+                                CompilerContext &ctx) {
     for (int i = elements.size() - 1; i >= 0; --i)
         elements[i]->Codegen(compiler, ctx);
 
     compiler.AddInstruction(Opcode::MAKE_ARRAY, line, elements.size());
 }
 
-void EigerC::UnaryOpNode::Codegen(BytecodeCompiler& compiler,
-                                  CompilerContext& ctx) {
+void EigerC::UnaryOpNode::Codegen(BytecodeCompiler &compiler,
+                                  CompilerContext &ctx) {
     operand->Codegen(compiler, ctx);
 
     switch (op) {
@@ -181,15 +184,15 @@ void EigerC::UnaryOpNode::Codegen(BytecodeCompiler& compiler,
     }
 }
 
-void EigerC::IndexNode::Codegen(BytecodeCompiler& compiler,
-                                CompilerContext& ctx) {
+void EigerC::IndexNode::Codegen(BytecodeCompiler &compiler,
+                                CompilerContext &ctx) {
     indexable->Codegen(compiler, ctx);
     index->Codegen(compiler, ctx);
     compiler.AddInstruction(Opcode::INDEX, line);
 }
 
-void EigerC::AttrNode::Codegen(BytecodeCompiler& compiler,
-                               CompilerContext& ctx) {
+void EigerC::AttrNode::Codegen(BytecodeCompiler &compiler,
+                               CompilerContext &ctx) {
     object->Codegen(compiler, ctx);
     compiler.AddInstruction(Opcode::ATTR, line, ctx.GetVariableID(attr));
 }
