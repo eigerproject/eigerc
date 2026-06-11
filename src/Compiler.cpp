@@ -146,7 +146,7 @@ void EigerC::FunctionNode::Codegen(BytecodeCompiler &compiler,
         newCompiler.AddInstruction(Opcode::RETURN, -1);
 
     auto constv = ctx.AddConstant(std::make_shared<BytecodeFunctionObject>(
-        line, ctx, functionName, parameters, code, isExpression));
+        line, ctx, functionName, parameters, code, isExpression, isVariadic));
 
     compiler.AddInstruction(Opcode::LOAD_FUNC, line, constv);
 

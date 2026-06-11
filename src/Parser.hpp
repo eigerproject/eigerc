@@ -70,12 +70,15 @@ struct FunctionNode : public ASTNode {
     std::vector<std::string> parameters;
     std::unique_ptr<ASTNode> body;
     bool isExpression = false;
+    bool isVariadic = false;
 
     FunctionNode(std::string functionName, std::vector<std::string> parameters,
-                 std::unique_ptr<ASTNode> body, bool isExpression, int line)
+                 std::unique_ptr<ASTNode> body, bool isExpression,
+                 bool isVariadic, int line)
         : functionName(std::move(functionName)),
           parameters(std::move(parameters)),
           isExpression(isExpression),
+          isVariadic(isVariadic),
           body(std::move(body)),
           ASTNode(line) {}
 

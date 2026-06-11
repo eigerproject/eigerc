@@ -1,6 +1,5 @@
 #include "Parser.hpp"
 
-#include <algorithm>
 #include <memory>
 
 #include "Error.hpp"
@@ -326,9 +325,17 @@ std::unique_ptr<ASTNode> Parser::ParseFunction() {
 
     Expect(TokenType::LPAREN);
 
+    bool isVariadic = false;
+
     while (currentToken.type != TokenType::RPAREN) {
+        if (currentToken.type == TokenType::PLUS) {
+            Expect(TokenType::PLUS);
+            isVariadic = true;
+        }
         parameters.push_back(currentToken.lexeme);
         Expect(TokenType::IDENTIFIER);
+
+        if (isVariadic) break;
 
         if (currentToken.type != TokenType::COMMA) break;
         Expect(TokenType::COMMA);
@@ -339,8 +346,9 @@ std::unique_ptr<ASTNode> Parser::ParseFunction() {
     bool isExpression = currentToken.type == TokenType::GT;
     std::unique_ptr<ASTNode> body = ParseFunctionBody();
 
-    return std::make_unique<FunctionNode>(
-        functionName, parameters, std::move(body), isExpression, functionLine);
+    return std::make_unique<FunctionNode>(functionName, parameters,
+                                          std::move(body), isExpression,
+                                          isVariadic, functionLine);
 }
 
 std::unique_ptr<ASTNode> Parser::ParseFunctionBody() {

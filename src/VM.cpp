@@ -131,6 +131,7 @@ void BytecodeVM::ExecuteNextInstruction() {
                             "VM Scope Stack underflow", inst.sourceCodeLine);
             }
             currentScope = currentScope->parent;
+
             break;
 
         case Opcode::CALL:
@@ -147,12 +148,43 @@ void BytecodeVM::ExecuteNextInstruction() {
             std::shared_ptr<FunctionObject> fn =
                 std::dynamic_pointer_cast<FunctionObject>(fnObj);
 
-            // get args from stack
             int argCount = inst.operand;
-            std::vector<std::shared_ptr<EiObject>> args(argCount);
+            int fnArgCount = fn->argNames.size();
 
-            for (int i = argCount - 1; i >= 0; --i)
-                args[i] = PopSafe(inst.sourceCodeLine);
+            bool valid = true;
+            if (fn->isVariadic)
+                valid = argCount >= fnArgCount - 1;
+            else
+                valid = argCount == fnArgCount;
+
+            if (!valid) {
+                throw Error(
+                    Error::Type::SYNTAX_ERROR,
+                    std::format("Function expected {}{} arguments, got {}",
+                                fn->isVariadic ? "at least " : "",
+                                fn->isVariadic ? fnArgCount - 1 : fnArgCount,
+                                argCount));
+            }
+
+            std::vector<std::shared_ptr<EiObject>> args(fnArgCount);
+
+            if (fn->isVariadic) {
+                int valuesInCollector = argCount - fnArgCount + 1;
+                std::vector<std::shared_ptr<EiObject>> collector(
+                    valuesInCollector);
+
+                for (int i = valuesInCollector - 1; i >= 0; --i)
+                    collector[i] = PopSafe(inst.sourceCodeLine);
+
+                for (int i = fnArgCount - 2; i >= 0; --i)
+                    args[i] = PopSafe(inst.sourceCodeLine);
+
+                args[fnArgCount - 1] = std::make_shared<ArrayObject>(
+                    inst.sourceCodeLine, collector);
+
+            } else
+                for (int i = fnArgCount - 1; i >= 0; --i)
+                    args[i] = PopSafe(inst.sourceCodeLine);
 
             if (inst.opcode == Opcode::TAIL_CALL) PopCallFrame();
 

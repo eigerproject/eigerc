@@ -15,8 +15,9 @@ namespace EigerC {
 class FunctionObject : public EiObject {
    public:
     FunctionObject() = default;
-    FunctionObject(std::string name, std::vector<std::string> argNames)
-        : name(name), argNames(argNames) {
+    FunctionObject(std::string name, std::vector<std::string> argNames,
+                   bool isVariadic)
+        : name(name), argNames(argNames), isVariadic(isVariadic) {
         type = DType::FUNCTION;
     }
 
@@ -25,15 +26,15 @@ class FunctionObject : public EiObject {
     std::string name;
     std::vector<std::string> argNames;
 
-    // to add later
-    // if true, last variable name in argNames is the variadic collector
-    // bool isVariadic = false;
+    // if true, last argument is collector
+    bool isVariadic = false;
 };
 
 class BuiltinFunctionObject : public FunctionObject {
    public:
-    BuiltinFunctionObject(std::string name, std::vector<std::string> argNames)
-        : FunctionObject(name, argNames) {
+    BuiltinFunctionObject(std::string name, std::vector<std::string> argNames,
+                          bool isVariadic)
+        : FunctionObject(name, argNames, isVariadic) {
         type = DType::FUNCTION;
     }
 
@@ -49,7 +50,8 @@ class BytecodeFunctionObject : public FunctionObject {
    public:
     BytecodeFunctionObject(int line, CompilerContext &ctx, std::string name,
                            std::vector<std::string> argNames,
-                           std::vector<Instruction> code, bool isInline);
+                           std::vector<Instruction> code, bool isInline,
+                           bool isVariadic);
 
     void StartExecute(const std::vector<std::shared_ptr<EiObject>> &values,
                       BytecodeVM *vm, bool pushRetVal);

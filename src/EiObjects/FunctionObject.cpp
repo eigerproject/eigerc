@@ -5,8 +5,11 @@ namespace EigerC {
 BytecodeFunctionObject::BytecodeFunctionObject(
     int line, CompilerContext &ctx, std::string name,
     std::vector<std::string> argNames, std::vector<Instruction> code,
-    bool isInline)
-    : ctx(ctx), code(code), isInline(isInline), FunctionObject(name, argNames) {
+    bool isInline, bool isVariadic)
+    : ctx(ctx),
+      code(code),
+      isInline(isInline),
+      FunctionObject(name, argNames, isVariadic) {
     this->line = line;
 
     if (ctx.cmdOpts.verbose) {
